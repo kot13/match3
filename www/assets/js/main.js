@@ -1,12 +1,16 @@
 const width = window.innerWidth;
 const height = window.innerHeight;
+const containerName = 'area';
 
-let game = new Phaser.Game(width, height, Phaser.CANVAS, 'area', { preload: preload, create: create, update: update, render: render });
+let game = new Phaser.Game(width, height, Phaser.CANVAS, containerName, { preload: preload, create: create, update: update, render: render });
 let socket;
 let players = {};
 
 function preload() {
-
+    game.time.desiredFps = 60;
+    game.time.advancedTiming = true;
+    game.load.script('splash', 'js/game/splash.js');
+    //game.load.image('splash_bg', 'assets/images/splash_bg.jpg');
 }
 
 function create() {
