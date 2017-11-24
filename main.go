@@ -9,6 +9,7 @@ import (
 func main() {
 	log.Println("start")
 
+
 	defer log.Println("stop")
 
 	server, err := socketio.NewServer(nil)
