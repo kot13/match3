@@ -1,7 +1,6 @@
 'use strict';
 
 class Menu {
-
     constructor() {
         this.background = pgame.make.sprite(0, 0, 'splash_bg');
         this.background.width = pgame.width;
