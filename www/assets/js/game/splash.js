@@ -17,9 +17,8 @@ class Splash {
         game.add.existing(this.title);
 
         game.load.script('SocketIO', '/js/lib/socket.io.js');
-
         game.load.script('game', 'js/game/game.js');
-        game.load.script('victory', 'js/game/victory.js');
+
     }
 
     create() {
