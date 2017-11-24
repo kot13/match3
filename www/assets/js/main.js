@@ -9,7 +9,7 @@ let players = {};
 function preload() {
     game.time.desiredFps = 60;
     game.time.advancedTiming = true;
-    game.load.script('splash', 'js/game/splash.js');
+    game.load.script('splash', 'assets/js/game/splash.js');
     //game.load.image('splash_bg', 'assets/images/splash_bg.jpg');
 }
 
