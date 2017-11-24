@@ -6,7 +6,9 @@ import (
 	//"sync"
 	"time"
 
+	//"encoding/json"
 	"github.com/googollee/go-socket.io"
+	"sync"
 )
 
 const (
@@ -15,9 +17,18 @@ const (
 	gameDuration    = 30
 )
 
+var (
+	playersLock = sync.Mutex{}
+	timer       = time.NewTimer(time.Second * gameDuration)
+)
+
 type Game struct {
 	server  *socketio.Server
 	players map[socketio.Socket]*Player
+}
+
+type GameState struct {
+	Players []Player `json:"players"`
 }
 
 func NewGame(server *socketio.Server) *Game {
@@ -38,25 +49,51 @@ func NewGame(server *socketio.Server) *Game {
 func (self *Game) AddPlayer(so socketio.Socket) {
 	so.On("joinNewPlayer", func(playerName string) {
 		log.Println("joinNewPlayer")
+
+		playerCount := len(self.players)
+		if playerCount == maxCountPlayers {
+			log.Println("Error: max player count")
+			return
+		}
+
+		player := NewPlayer(so.Id(), playerName)
+		log.Println("Set player id: ", so.Id())
+
+		func() {
+			playersLock.Lock()
+			defer playersLock.Unlock()
+			self.players[so] = player
+		}()
+
+		so.Join(gameRoom)
+
+		go func() {
+			<-timer.C
+			var maxHealth int
+			var winnerId string
+			for _, p := range self.players {
+				if p.Health > maxHealth {
+					maxHealth = p.Health
+					winnerId = p.Id
+				}
+			}
+			so.BroadcastTo(gameRoom, "win", winnerId)
+			so.Emit("win", winnerId)
+		}()
 	})
 
 	so.On("disconnection", func() {
 		log.Println("on disconnect")
+
+		player, ok := self.players[so]
+		if ok {
+			func() {
+				playersLock.Lock()
+				defer playersLock.Unlock()
+				delete(self.players, so)
+			}()
+
+			so.BroadcastTo(gameRoom, "playerDisconnected", player.Id)
+		}
 	})
-}
-
-func (self *Game) Loop() {
-	ticker := time.NewTicker(time.Millisecond * 100)
-	prevTick := time.Now()
-
-	for t := range ticker.C {
-		deltaTime := float32(t.Sub(prevTick).Seconds())
-		prevTick = t
-
-		log.Println(deltaTime)
-
-		var msg []byte
-
-		self.server.BroadcastTo(gameRoom, "tick", string(msg))
-	}
 }

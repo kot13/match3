@@ -6,10 +6,43 @@
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-<div id="gameView"></div>
+<table>
+    <tr>
+        <td>
+            <div id="area"></div>
+        </td>
+        <td valign="top">
+            <input type="text" id="command" name="command" value="">
+            <button id="sendCommandButton">Send</button>
+            <br>
+            <textarea id="logView" rows="10" cols="50" style="height: 500px"></textarea>
+        </td>
+    </tr>
+</table>
+
 <script src="assets/js/lib/jquery.min.js"></script>
 <script src="assets/js/lib/phaser.min.js"></script>
 <script src="assets/js/lib/socket-io.min.js"></script>
 <script src="assets/js/main.js"></script>
+<script>
+    'use strict';
+    let logData = [];
+    let logView;
+    const width = 600;
+    const height = 800;
+
+    function log(msg) {
+        if (logData.length == 50) {
+            logData.shift()
+        }
+        logData.push(msg)
+        logView.val(logData.join('\n'));
+    }
+
+    $(document).ready(function() {
+        logView = $('#logView');
+        new Main(width, height, 'area');
+    });
+</script>
 </body>
 </html>

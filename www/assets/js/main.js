@@ -1,39 +1,29 @@
-const width = window.innerWidth;
-const height = window.innerHeight;
-const containerName = 'area';
+'use strict';
 
-let game = new Phaser.Game(width, height, Phaser.CANVAS, containerName, { preload: preload, create: create, update: update, render: render });
-let socket;
-let players = {};
+let pgame;
+let userName;
 
-function preload() {
-    game.time.desiredFps = 60;
-    game.time.advancedTiming = true;
-    game.load.script('splash', 'assets/js/game/splash.js');
-    //game.load.image('splash_bg', 'assets/images/splash_bg.jpg');
-}
+class Main {
+    constructor(width, height, contanerName) {
+        pgame = new Phaser.Game(width, height, Phaser.AUTO, contanerName, {
+            preload: () => this.preload(), create: () => this.create(), render: () => this.render()
+        });
+    }
 
-function create() {
-    game.state.add('Splash', Splash);
-    game.state.start('Splash');
+    preload() {
+        pgame.time.desiredFps = 60;
+        pgame.time.advancedTiming = true;
 
-    socket = io.connect(window.location.host, {path: '/ws/', transports: ['websocket']});
+        pgame.load.script('splash', 'assets/js/game/splash.js');
+        pgame.load.image('splash_bg', 'assets/images/splash_bg.jpg');
+    }
 
-    //получаем имя игрока
-    let savedName = window.localStorage.getItem('player_name');
-    if (!savedName) savedName = 'guest';
+    create() {
+        pgame.state.add('Splash', Splash);
+        pgame.state.start('Splash');
+    }
 
-    let playerName = prompt('Please enter your name', savedName);
-    if (!playerName) playerName = '';
-    window.localStorage.setItem('player_name', playerName);
-
-    socket.emit('joinNewPlayer', playerName);
-}
-
-function update() {
-
-}
-
-function render() {
-    game.debug.cameraInfo(game.camera, 32, 32);
+    render() {
+        pgame.debug.cameraInfo(pgame.camera, 32, 32);
+    }
 }

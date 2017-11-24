@@ -16,7 +16,7 @@ func main() {
 		panic(err)
 	}
 
-	game := NewGame(server)
+	NewGame(server)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		log.Println(r.URL.Path)
@@ -24,8 +24,6 @@ func main() {
 	})
 
 	http.Handle("/ws/", server)
-
-	go game.Loop()
 
 	if err := http.ListenAndServe(":8081", nil); err != nil {
 		log.Println("ListenAndServe: ", err)

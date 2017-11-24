@@ -3,24 +3,32 @@
 class Splash {
 
     constructor() {
-        this.background = game.make.sprite(0, 0, 'splash_bg');
-        this.background.width = game.width;
-        this.background.height = game.height;
+        this.background = pgame.make.sprite(0, 0, 'splash_bg');
+        this.background.width = pgame.width;
+        this.background.height = pgame.height;
 
-        this.title = game.make.text(0, 0, 'Загружаемся..', {fill: 'white'});
-        this.title.x = game.width / 2.0 - this.title.width / 2.0;
-        this.title.y = game.height / 2.0 - this.title.height / 2.0;
+        this.title = pgame.make.text(0, 0, 'Загружаемся..', {fill: 'white'});
+        this.title.x = pgame.width / 2.0 - this.title.width / 2.0;
+        this.title.y = pgame.height / 2.0 - this.title.height / 2.0;
     }
 
     preload() {
-        game.add.existing(this.background);
-        game.add.existing(this.title);
+        pgame.add.existing(this.background);
+        pgame.add.existing(this.title);
 
-        game.load.script('SocketIO', 'assets/js/lib/socket.io.js');
-        game.load.script('game', 'assets/js/game/game.js');
+        pgame.load.script('SocketIO', 'assets/js/lib/socket-io.min.js');
+
+        pgame.load.script('menu', 'assets/js/game/menu.js');
+        pgame.load.script('game', 'assets/js/game/game.js');
+        pgame.load.script('player', 'assets/js/game/player.js');
     }
 
     create() {
-        game.state.add("Game", Game);
+        pgame.state.add('Menu', Menu);
+        pgame.state.add('Game', Game);
+
+        setTimeout(function () {
+            pgame.state.start('Menu');
+        }, 1000);
     }
 }
