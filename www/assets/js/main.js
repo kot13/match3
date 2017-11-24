@@ -1,7 +1,7 @@
 'use strict';
 
 let pgame;
-let userName;
+let userName = 'Гость';
 
 class Main {
     constructor(width, height, contanerName) {
