@@ -24,7 +24,6 @@ function create() {
     if (!playerName) playerName = '';
     window.localStorage.setItem('player_name', playerName);
 
-
     socket.emit('joinNewPlayer', playerName);
 }
 
