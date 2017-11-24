@@ -11,5 +11,5 @@ $ cd /go/src/github.com/kot13/match3
 $ gvt restore
 $ go build
 $ ./match3
+$ open http://localhost:8081
 ```
-
