@@ -24,10 +24,5 @@ class Splash {
 
     create() {
         game.state.add("Game", Game);
-        game.state.add("Victory", Victory);
-        game.state.add("Lose", Lose);
-        setTimeout(function () {
-            game.state.start("Menu");
-        }, 1000);
     }
 }
