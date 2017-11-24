@@ -14,6 +14,9 @@ function preload() {
 }
 
 function create() {
+    game.state.add('Splash', Splash);
+    game.state.start('Splash');
+
     socket = io.connect(window.location.host, {path: '/ws/', transports: ['websocket']});
 
     //получаем имя игрока
