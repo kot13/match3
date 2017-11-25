@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"math/rand"
 	"time"
 )
@@ -182,6 +183,9 @@ func killMatches(board [][]string) ([][]string, []Killed) {
 	var killed []Killed
 	for i := 0; i < countCols; i++ {
 		for j := 0; j < countRows; j++ {
+			if result[i][j] == "" {
+				continue
+			}
 			name := result[i][j]
 			countKilled := 1
 			countUp, countDown, countLeft, countRight := gemMatches(result, j, i)
@@ -257,7 +261,7 @@ func calcScores(killed []Killed) Scores {
 	}
 	for i := 0; i < len(killed); i++ {
 		gem := findGemByName(killed[i].Name)
-		bonus := killed[i].Count
+		bonus := killed[i].Count - minMatch
 		scores.Energy += gem.Energy + bonus*gem.AdditionalEnergy
 		scores.Mimimi += gem.Mimimi + bonus*gem.AdditionalMimimi
 		scores.EnemyEnergy += gem.EnemyEnergy + bonus*gem.EnemyAdditionalEnergy
