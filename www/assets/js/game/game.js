@@ -47,7 +47,7 @@ class Game {
             log('Not init players');
             return;
         }
-
+        currentPlayer = state.currentPlayer;
         this.board = new Board(pgame, this.socket, 70, 330, 7, 7);
         this.board.fill(state.board);
     }

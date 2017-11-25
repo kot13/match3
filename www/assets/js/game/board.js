@@ -79,9 +79,13 @@ class Board {
     }
 
     sendBoard() {
-        if (this.socket.id === currentPlayer) {
+        if (this.isCurrentPlayer()) {
             this.socket.emit('turn', this.getGemsData());
         }
+    }
+
+    isCurrentPlayer() {
+        return this.socket.id === currentPlayer;
     }
 
     getGemsData() {
@@ -129,7 +133,7 @@ class Board {
     // select a gem and remember its starting position
     selectGem(gem) {
 
-        if (this.allowInput) {
+        if (this.allowInput && this.isCurrentPlayer()) {
             this.selectedGem = gem;
             this.selectedGemStartPos.x = gem.posX;
             this.selectedGemStartPos.y = gem.posY;
