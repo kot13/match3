@@ -28,6 +28,11 @@ type GameState struct {
 	CurrentPlayer string            `json:"currentPlayer"`
 }
 
+type GameStateUpdate struct {
+	Board   [][]string `json:"board"`
+	NewGems [][]string `json:"newGems"`
+}
+
 func NewGame(server *socketio.Server) *Game {
 	game := &Game{server: server, players: map[socketio.Socket]*Player{}}
 
@@ -122,5 +127,28 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 
 			so.BroadcastTo(gameRoom, "playerDisconnected", player.Id)
 		}
+	})
+
+	so.On("turn", func(msg string) {
+		log.Println("turn: ", msg)
+
+		data := struct {
+			Board [][]string `json:"board"`
+		}{}
+		err := json.Unmarshal([]byte(msg), &data)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		boardWithoudKilled, newGems := RegenarateBoard(data.Board)
+
+		state, _ := json.Marshal(GameStateUpdate{
+			Board:   boardWithoudKilled,
+			NewGems: newGems,
+		})
+
+		so.BroadcastTo(gameRoom, "boardUpdate", string(state))
+		so.Emit("boardUpdate", string(state))
 	})
 }
