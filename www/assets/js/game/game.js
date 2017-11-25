@@ -28,12 +28,12 @@ class Game {
     initNetwork() {
         this.socket = io.connect(window.location.host, {path: '/ws/', transports: ['websocket']});
         this.socket.on('playerDisconnected', (msg) => this.onPlayerDisconnected(msg));
-        this.socket.on('start', (players) => this.onStart(players));
+        this.socket.on('start', (players, board) => this.onStart(players, board));
         this.socket.on('win', (playerId) => this.onWin(playerId));
     }
 
-    onStart(players) {
-        log(players);
+    onStart(players, board) {
+        log(players, board);
     }
 
     onPlayerDisconnected(playerId) {

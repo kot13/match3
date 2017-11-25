@@ -29,7 +29,8 @@ type Game struct {
 }
 
 type GameState struct {
-	Players []Player `json:"players"`
+	Players []Player   `json:"players"`
+	Board   [][]string `json:"board"`
 }
 
 func NewGame(server *socketio.Server) *Game {
@@ -73,8 +74,10 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 				players = append(players, *p)
 			}
 
+			board := GenerateBoard()
 			state, _ := json.Marshal(GameState{
 				Players: players,
+				Board:   board,
 			})
 
 			so.BroadcastTo(gameRoom, "start", string(state))
