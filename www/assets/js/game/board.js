@@ -17,34 +17,23 @@ class Board {
         this.allowInput = null;
 
         this.pGame.input.addMoveCallback(this.slideGem, this);
-        this.fill();
+        // this.fill();
     }
 
-    fill() {
+    fill(gemSet) {
         for (var i = 0; i < this.cols; i++) {
             for (var j = 0; j < this.rows; j++) {
-                var icon = this.getRandIcon();
+                var icon = gemSet[i][j];
                 var gem = this.gems.create(this.posX + i * this.gem_size, this.posY + j * this.gem_size, icon);
                 gem.name = 'gem' + i.toString() + 'x' + j.toString();
                 gem.inputEnabled = true;
                 gem.events.onInputDown.add(this.selectGem, this);
                 gem.events.onInputUp.add(this.releaseGem, this);
                 this.setGemPos(gem, i, j); // each gem has a position on the board
-                gem.kill();
             }
         }
 
-        this.removeKilledGems();
-
-        var dropGemDuration = this.dropGems();
-
-        // delay board refilling until all existing gems have dropped down
-        this.pGame.time.events.add(dropGemDuration * 100, this.refill, this);
-
-        this.allowInput = false;
-
-        this.selectedGem = null;
-        this.tempShiftedGem = null;
+        this.allowInput = true;
     }
 
     refill() {

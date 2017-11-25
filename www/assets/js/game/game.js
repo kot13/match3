@@ -11,17 +11,10 @@ class Game {
 
     preload() {
         pgame.add.existing(this.background);
-        this.board = new Board(pgame,70,330,7,7)
     }
 
     create() {
         this.initNetwork();
-
-        this.player = new Player(pgame, this.socket.id, userName);
-        this.enemy = new Player(pgame, this.socket.id, 'ENEMY');
-
-        this.player.create(10, 40);
-        this.enemy.create(600, 40, true);
 
         this.socket.emit('joinNewPlayer', userName);
         log('Ожидаем второго игрока');
@@ -30,12 +23,22 @@ class Game {
     initNetwork() {
         this.socket = io.connect(window.location.host, {path: '/ws/', transports: ['websocket']});
         this.socket.on('playerDisconnected', (msg) => this.onPlayerDisconnected(msg));
-        this.socket.on('start', (players, board) => this.onStart(players, board));
+        this.socket.on('start', (state) => this.onStart(state));
         this.socket.on('win', (playerId) => this.onWin(playerId));
     }
 
-    onStart(players, board) {
-        log(players, board);
+    onStart(stateJson) {
+        let state = JSON.parse(stateJson);
+        log(state.players, state.board);
+
+        this.player = new Player(pgame, this.socket.id, userName);
+        this.enemy = new Player(pgame, this.socket.id, 'ENEMY');
+
+        this.player.create(10, 40);
+        this.enemy.create(600, 40, true);
+
+        this.board = new Board(pgame,70,330,7,7);
+        this.board.fill(state.board);
     }
 
     onPlayerDisconnected(playerId) {
