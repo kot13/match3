@@ -15,7 +15,7 @@ class Player {
     }
 
     create() {
-        this.cat  = this.game.add.sprite(100, 240, 'catstay');
+        this.cat  = this.game.add.sprite(40, 100, 'catstay');
         this.anim = this.cat.animations.add('catstay');
 
         this.anim.onStart.add(this.animationStarted, this);
