@@ -48,13 +48,12 @@ class Player {
     }
 
     animationLooped(sprite, animation) {
-
-    if (animation.loopCount === 1) {
-        //loopText =  this.game.add.text(32, 64, 'Animation looped', { fill: 'white' });
-    } else {
-       // loopText.text = 'Animation looped x2';
-        //animation.loop = false;
-    }
+        if (animation.loopCount === 1) {
+            //loopText =  this.game.add.text(32, 64, 'Animation looped', { fill: 'white' });
+        } else {
+           // loopText.text = 'Animation looped x2';
+            //animation.loop = false;
+        }
 }
 
     animationStopped(sprite, animation) {
