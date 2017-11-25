@@ -59,7 +59,6 @@ class Board {
 
                 for (var j = this.rows - 1; j >= 0; j--) {
                     var gem = this.getGem(i, j);
-
                     if (gem === null) {
                         gemsMissingFromCol++;
                         gem = this.gems.getFirstDead();
@@ -68,6 +67,8 @@ class Board {
                         gem.loadTexture(icon);
                         this.setGemPos(gem, i, j);
                         this.tweenGemPos(gem, gem.posX, gem.posY);
+                    } else if (this.getGemColor(gem) !== board[j][i]) {
+                        gem.loadTexture(board[j][i]);
                     }
                 }
 
