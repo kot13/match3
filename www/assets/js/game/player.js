@@ -2,10 +2,12 @@
 
 class Player {
 
-    constructor(phaserGame, id, name, skin) {
+    constructor(phaserGame, id, name, skin, tiredness, mimimi) {
         this.id   = id;
         this.name = name;
         this.game = phaserGame;
+        this.tiredness = tiredness;
+        this.mimimi = mimimi;
         this.anim = null;
         this.skin = skin;
         this.catStaySprite  = null;

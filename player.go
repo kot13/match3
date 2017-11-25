@@ -1,11 +1,13 @@
 package main
 
-const Health = 100
+const DefaultEnergy = 0
+const DefaultMimimi = 0
 
 type Player struct {
 	Id     string `json:"id"`
 	Name   string `json:"name"`
-	Health int    `json:"health"`
+	Energy int    `json:"energy"`
+	Mimimi int    `json:"mimimi"`
 	Skin   string `json:"skin"`
 }
 
@@ -14,7 +16,8 @@ func NewPlayer(socketId string, playerName string, skin string) (player *Player)
 		Id:     socketId,
 		Name:   playerName,
 		Skin:   skin,
-		Health: Health,
+		Mimimi: DefaultMimimi,
+		Energy: DefaultEnergy,
 	}
 
 	return

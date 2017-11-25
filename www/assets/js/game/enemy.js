@@ -1,9 +1,11 @@
 'use strict';
 
 class Enemy {
-    constructor(phaserGame, skin) {
+    constructor(phaserGame, skin, tiredness, mimimi) {
         this.game = phaserGame;
         this.skin = skin;
+        this.tiredness = tiredness;
+        this.mimimi = mimimi;
         this.anim = null;
         this.catStaySprite  = null;
     }

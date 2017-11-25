@@ -21,6 +21,57 @@ class Game {
             skin: skin
         }));
         log('Ожидаем второго игрока');
+
+        let barConfig = {
+            x: 110,
+            y: 10,
+            bar: {
+                color: '#19ff19'
+            },
+            width: 200,
+            height: 10
+        };
+        this.myEnergyBar = new HealthBar(pgame, barConfig);
+
+        barConfig = {
+            x: 490,
+            y: 10,
+            bar: {
+                color: '#19ff19'
+            },
+            width: 200,
+            height: 10
+        };
+        this.enemyEnergyBar = new HealthBar(pgame, barConfig);
+
+        barConfig = {
+            x: 110,
+            y: 30,
+            bar: {
+                color: '#ffc0cb'
+            },
+            width: 200,
+            height: 10
+        };
+        this.myMimimiBar = new HealthBar(pgame, barConfig);
+        this.myMimimiBar.setPercent(0);
+
+        barConfig = {
+            x: 490,
+            y: 30,
+            bar: {
+                color: '#ffc0cb'
+            },
+            width: 200,
+            height: 10
+        };
+        this.enemyMimimiBar = new HealthBar(pgame, barConfig);
+        this.enemyMimimiBar.setPercent(0);
+
+    }
+
+    update() {
+
     }
 
     initNetwork() {
@@ -35,10 +86,22 @@ class Game {
         let state = JSON.parse(stateJson);
         for (let key in state.players) {
             if (key === this.socket.id) {
-                this.player = new Player(pgame, state.players[key].id, state.players[key].name, state.players[key].skin);
+                this.player = new Player(
+                    pgame,
+                    state.players[key].id,
+                    state.players[key].name,
+                    state.players[key].skin,
+                    state.players[key].tiredness,
+                    state.players[key].mimimi
+                );
                 this.player.create(10, 40);
             } else {
-                this.enemy = new Enemy(pgame, state.players[key].skin);
+                this.enemy = new Enemy(
+                    pgame,
+                    state.players[key].skin,
+                    state.players[key].tiredness,
+                    state.players[key].mimimi
+                );
                 this.enemy.create(600, 40, true);
             }
         }
@@ -72,6 +135,17 @@ class Game {
     onBoardUpdate(stateJson) {
         let state = JSON.parse(stateJson);
         currentPlayer = state.currentPlayer;
-        this.board.refill(state.board,state.newGems);
+
+        for (let key in state.players) {
+            if (key === this.socket.id) {
+                this.myEnergyBar.setPercent();
+                this.myMimimiBar.setPercent();
+            } else {
+                this.enemyEnergyBar.setPercent();
+                this.enemyMimimiBar.setPercent();
+            }
+        }
+
+        this.board.refill(state.board, state.newGems);
     }
 }
