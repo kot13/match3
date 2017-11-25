@@ -84,7 +84,7 @@ var gems = []Gem{
 		AdditionalEnergy:      0,
 		Mimimi:                -10,
 		AdditionalMimimi:      -5,
-		EnemyEnergy:           -30,
+		EnemyEnergy:           -20,
 		EnemyAdditionalEnergy: -5,
 		EnemyMimimi:           0,
 		EnemyAdditionalMimimi: 0,
