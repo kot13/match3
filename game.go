@@ -1,14 +1,10 @@
 package main
 
 import (
-	//"encoding/json"
-	"log"
-	//"sync"
 	//"time"
-
-	//"encoding/json"
 	"encoding/json"
 	"github.com/googollee/go-socket.io"
+	"log"
 	"sync"
 )
 
@@ -18,10 +14,8 @@ const (
 	gameDuration    = 30
 )
 
-var (
-	playersLock = sync.Mutex{}
-	//timer       = time.NewTimer(time.Second * gameDuration)
-)
+var playersLock = sync.Mutex{}
+var currentPlayer string
 
 type Game struct {
 	server  *socketio.Server
@@ -29,8 +23,9 @@ type Game struct {
 }
 
 type GameState struct {
-	Players map[string]Player `json:"players"`
-	Board   [][]string        `json:"board"`
+	Players       map[string]Player `json:"players"`
+	Board         [][]string        `json:"board"`
+	CurrentPlayer string            `json:"currentPlayer"`
 }
 
 func NewGame(server *socketio.Server) *Game {
@@ -71,6 +66,8 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 		player := NewPlayer(so.Id(), newPlayer.Name, newPlayer.Skin)
 		log.Println("Set player id: ", so.Id())
 
+		currentPlayer = so.Id()
+
 		func() {
 			playersLock.Lock()
 			defer playersLock.Unlock()
@@ -87,8 +84,9 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 
 			board := GenerateBoard()
 			state, _ := json.Marshal(GameState{
-				Players: players,
-				Board:   board,
+				Players:       players,
+				Board:         board,
+				CurrentPlayer: currentPlayer,
 			})
 
 			so.BroadcastTo(gameRoom, "start", string(state))
