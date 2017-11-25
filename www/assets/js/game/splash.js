@@ -29,6 +29,9 @@ class Splash {
         pgame.load.image('gem4', 'assets/images/gemRed.png');
         pgame.load.image('gem5', 'assets/images/upg_dagger.png');
 
+        pgame.load.image('cat1','assets/images/cat1.png');
+        pgame.load.image('cat2','assets/images/cat2.png');
+
         pgame.load.spritesheet('catstay', '/assets/images/sprites/cat/stay.png', 273, 237, 17);
     }
 
