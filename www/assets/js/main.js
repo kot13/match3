@@ -2,6 +2,7 @@
 
 let pgame;
 let userName = 'Гость';
+let currentPlayer;
 
 class Main {
     constructor(width, height, contanerName) {

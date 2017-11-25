@@ -1,7 +1,8 @@
 'use strict';
 class Board {
 
-    constructor(pGame, posX, posY, cols, rows) {
+    constructor(pGame, socket, posX, posY, cols, rows) {
+        this.socket = socket;
         this.gem_size = 64;
         this.match_min = 3;
         this.gems = pGame.add.group();
@@ -17,13 +18,12 @@ class Board {
         this.allowInput = null;
 
         this.pGame.input.addMoveCallback(this.slideGem, this);
-        // this.fill();
     }
 
     fill(gemSet) {
         for (var i = 0; i < this.cols; i++) {
             for (var j = 0; j < this.rows; j++) {
-                var icon = gemSet[i][j];
+                var icon = gemSet[j][i];
                 var gem = this.gems.create(this.posX + i * this.gem_size, this.posY + j * this.gem_size, icon);
                 gem.name = 'gem' + i.toString() + 'x' + j.toString();
                 gem.inputEnabled = true;
@@ -36,56 +36,66 @@ class Board {
         this.allowInput = true;
     }
 
-    refill() {
-        var maxGemsMissingFromCol = 0;
+    refill(board, newGems) {
 
+        var killedExists = false;
         for (var i = 0; i < this.cols; i++) {
-            var gemsMissingFromCol = 0;
-
-            for (var j = this.rows - 1; j >= 0; j--) {
-                var gem = this.getGem(i, j);
-
-                if (gem === null) {
-                    gemsMissingFromCol++;
-                    gem = this.gems.getFirstDead();
-                    gem.reset(i * this.gem_size, -gemsMissingFromCol * this.gem_size);
-                    gem.dirty = true;
-                    var icon = this.getRandIcon();
-                    gem.loadTexture(icon);
-                    this.setGemPos(gem, i, j);
-                    this.tweenGemPos(gem, gem.posX, gem.posY, gemsMissingFromCol * 2);
+            for (var j = 0; j < this.rows; j++) {
+                if (board[j][i] === '') {
+                    killedExists = true;
+                    var gem = this.getGem(i, j);
+                    gem.kill();
                 }
             }
-
-            maxGemsMissingFromCol = Math.max(maxGemsMissingFromCol, gemsMissingFromCol);
         }
 
-        this.pGame.time.events.add(maxGemsMissingFromCol * 2 * 100, this.boardRefilled, this);
+        if (killedExists) {
+            this.removeKilledGems();
+
+            var maxGemsMissingFromCol = 0;
+
+            for (var i = 0; i < this.cols; i++) {
+                var gemsMissingFromCol = 0;
+
+                for (var j = this.rows - 1; j >= 0; j--) {
+                    var gem = this.getGem(i, j);
+
+                    if (gem === null) {
+                        gemsMissingFromCol++;
+                        gem = this.gems.getFirstDead();
+                        gem.reset(i * this.gem_size, -gemsMissingFromCol * this.gem_size);
+                        var icon = newGems[j][i];
+                        gem.loadTexture(icon);
+                        this.setGemPos(gem, i, j);
+                        this.tweenGemPos(gem, gem.posX, gem.posY, gemsMissingFromCol * 2);
+                    }
+                }
+
+                maxGemsMissingFromCol = Math.max(maxGemsMissingFromCol, gemsMissingFromCol);
+            }
+
+            this.pGame.time.events.add(maxGemsMissingFromCol * 2 * 100, this.sendBoard, this);
+        }
     }
 
-    // when the board has finished refilling, re-enable player input
-    boardRefilled() {
-        var canKill = false;
+    sendBoard() {
+        if (this.socket.id === currentPlayer) {
+            this.socket.emit('turn', this.getGemsData());
+        }
+    }
+
+    getGemsData() {
+        let board = [];
         for (var i = 0; i < this.cols; i++) {
-            for (var j = this.rows - 1; j >= 0; j--) {
-                var gem = this.getGem(i, j);
-
-                if (gem.dirty) {
-                    gem.dirty = false;
-                    canKill = this.checkAndKillGemMatches(gem) || canKill;
-                }
+            let row = [];
+            for (var j = 0; j < this.rows; j++) {
+                let gem = this.getGem(j, i);
+                row.push(this.getGemColor(gem))
             }
+            board.push(row);
         }
 
-        if (canKill) {
-            this.removeKilledGems();
-            var dropGemDuration = this.dropGems();
-            // delay board refilling until all existing gems have dropped down
-            this.pGame.time.events.add(dropGemDuration * 100, this.refill, this);
-            this.allowInput = false;
-        } else {
-            this.allowInput = true;
-        }
+        return JSON.stringify({board: board});
     }
 
     // look for gems with empty space beneath them and move them down
@@ -162,16 +172,18 @@ class Board {
                 this.tempShiftedGem = null;
 
             }
+        } else {
+            this.sendBoard();
         }
 
-        this.removeKilledGems();
+        // this.removeKilledGems();
+        //
+        // var dropGemDuration = this.dropGems();
+        //
+        // // delay board refilling until all existing gems have dropped down
+        // this.pGame.time.events.add(dropGemDuration * 100, this.refill, this);
 
-        var dropGemDuration = this.dropGems();
-
-        // delay board refilling until all existing gems have dropped down
-        this.pGame.time.events.add(dropGemDuration * 100, this.refill, this);
-
-        this.allowInput = false;
+        this.allowInput = true;
 
         this.selectedGem = null;
         this.tempShiftedGem = null;
@@ -246,7 +258,7 @@ class Board {
         return this.pGame.add.tween(gem).to({
             x: this.posX + newPosX * this.gem_size,
             y: this.posY + newPosY * this.gem_size
-        }, 200 , Phaser.Easing.Linear.None, true);
+        }, 200, Phaser.Easing.Linear.None, true);
 
     }
 
@@ -272,12 +284,12 @@ class Board {
         var countVert = countUp + countDown + 1;
 
         if (countVert >= this.match_min) {
-            this.killGemRange(gem.posX, gem.posY - countUp, gem.posX, gem.posY + countDown);
+            // this.killGemRange(gem.posX, gem.posY - countUp, gem.posX, gem.posY + countDown);
             canKill = true;
         }
 
         if (countHoriz >= this.match_min) {
-            this.killGemRange(gem.posX - countLeft, gem.posY, gem.posX + countRight, gem.posY);
+            // this.killGemRange(gem.posX - countLeft, gem.posY, gem.posX + countRight, gem.posY);
             canKill = true;
         }
 

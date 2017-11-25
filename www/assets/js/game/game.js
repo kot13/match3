@@ -25,6 +25,7 @@ class Game {
         this.socket.on('playerDisconnected', (msg) => this.onPlayerDisconnected(msg));
         this.socket.on('start', (state) => this.onStart(state));
         this.socket.on('win', (playerId) => this.onWin(playerId));
+        this.socket.on('boardUpdate', (state) => this.onBoardUpdate(state));
     }
 
     onStart(stateJson) {
@@ -37,7 +38,7 @@ class Game {
         this.player.create(10, 40);
         this.enemy.create(600, 40, true);
 
-        this.board = new Board(pgame,70,330,7,7);
+        this.board = new Board(pgame, this.socket, 70, 330, 7, 7);
         this.board.fill(state.board);
     }
 
@@ -56,5 +57,11 @@ class Game {
         } else {
             alert('You lose');
         }
+    }
+
+    onBoardUpdate(stateJson) {
+        let state = JSON.parse(stateJson);
+        currentPlayer = state.currentPlayer;
+        this.board.refill(state.board,state.newGems);
     }
 }
