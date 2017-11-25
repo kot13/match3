@@ -29,8 +29,8 @@ type Game struct {
 }
 
 type GameState struct {
-	Players []Player   `json:"players"`
-	Board   [][]string `json:"board"`
+	Players map[string]Player `json:"players"`
+	Board   [][]string        `json:"board"`
 }
 
 func NewGame(server *socketio.Server) *Game {
@@ -49,7 +49,7 @@ func NewGame(server *socketio.Server) *Game {
 }
 
 func (self *Game) AddPlayer(so socketio.Socket) {
-	so.On("joinNewPlayer", func(playerName string) {
+	so.On("joinNewPlayer", func(msg string) {
 		log.Println("joinNewPlayer")
 
 		if len(self.players) == maxCountPlayers {
@@ -57,7 +57,18 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 			return
 		}
 
-		player := NewPlayer(so.Id(), playerName)
+		newPlayer := struct {
+			Name string `json:"name"`
+			Skin string `json:"skin"`
+		}{}
+
+		err := json.Unmarshal([]byte(msg), &newPlayer)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		player := NewPlayer(so.Id(), newPlayer.Name, newPlayer.Skin)
 		log.Println("Set player id: ", so.Id())
 
 		func() {
@@ -69,9 +80,9 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 		so.Join(gameRoom)
 
 		if len(self.players) == maxCountPlayers {
-			var players []Player
+			var players = map[string]Player{}
 			for _, p := range self.players {
-				players = append(players, *p)
+				players[p.Id] = *p
 			}
 
 			board := GenerateBoard()

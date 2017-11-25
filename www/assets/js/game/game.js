@@ -16,7 +16,10 @@ class Game {
     create() {
         this.initNetwork();
 
-        this.socket.emit('joinNewPlayer', userName);
+        this.socket.emit('joinNewPlayer', JSON.stringify({
+            name: userName,
+            skin: skin
+        }));
         log('Ожидаем второго игрока');
     }
 
@@ -30,13 +33,20 @@ class Game {
 
     onStart(stateJson) {
         let state = JSON.parse(stateJson);
-        log(state.players, state.board);
+        for (let key in state.players) {
+            if (key === this.socket.id) {
+                this.player = new Player(pgame, state.players[key].id, state.players[key].name, state.players[key].skin);
+                this.player.create(10, 40);
+            } else {
+                this.enemy = new Enemy(pgame, state.players[key].skin);
+                this.enemy.create(600, 40, true);
+            }
+        }
 
-        this.player = new Player(pgame, this.socket.id, userName);
-        this.enemy = new Player(pgame, this.socket.id, 'ENEMY');
-
-        this.player.create(10, 40);
-        this.enemy.create(600, 40, true);
+        if (this.player === undefined || this.enemy === undefined) {
+            log('Not init players');
+            return;
+        }
 
         this.board = new Board(pgame, this.socket, 70, 330, 7, 7);
         this.board.fill(state.board);

@@ -3,6 +3,7 @@
 let pgame;
 let userName = 'Гость';
 let currentPlayer;
+let skin = 'cat_gray';
 
 class Main {
     constructor(width, height, contanerName) {

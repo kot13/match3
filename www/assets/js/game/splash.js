@@ -17,10 +17,10 @@ class Splash {
         pgame.add.existing(this.title);
 
         pgame.load.script('SocketIO', 'assets/js/lib/socket-io.min.js');
-
         pgame.load.script('menu', 'assets/js/game/menu.js');
         pgame.load.script('game', 'assets/js/game/game.js');
         pgame.load.script('player', 'assets/js/game/player.js');
+        pgame.load.script('enemy', 'assets/js/game/enemy.js');
         pgame.load.script('board', 'assets/js/game/board.js');
 
         pgame.load.image('gem1', 'assets/images/heart.png');
@@ -29,10 +29,12 @@ class Splash {
         pgame.load.image('gem4', 'assets/images/gemRed.png');
         pgame.load.image('gem5', 'assets/images/upg_dagger.png');
 
-        pgame.load.image('cat1','assets/images/cat1.png');
-        pgame.load.image('cat2','assets/images/cat2.png');
+        pgame.load.image('cat_gray','assets/images/cat1.png');
+        pgame.load.image('cat_ginger','assets/images/cat2.png');
+        pgame.load.image('cat_lock','assets/images/cat-lock.png');
 
-        pgame.load.spritesheet('catstay', '/assets/images/sprites/cat/stay.png', 273, 237, 17);
+        pgame.load.spritesheet('cat_gray_stay', '/assets/images/sprites/cat-gray/stay.png', 273, 237, 17);
+        pgame.load.spritesheet('cat_ginger_stay', '/assets/images/sprites/cat-ginger/stay.png', 273, 237, 17);
     }
 
     create() {
