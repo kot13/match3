@@ -12,7 +12,6 @@ class Player {
 
     preload() {
        // this.game.load.spritesheet('catstay', '/assets/images/sprites/cat/stay.png', 121, 121, 10);
-
     }
 
     create(x, y, invertSprite) {

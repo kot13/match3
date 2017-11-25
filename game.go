@@ -29,8 +29,8 @@ type Game struct {
 }
 
 type GameState struct {
-	Players []Player   `json:"players"`
-	Board   [][]string `json:"board"`
+	Players map[string]Player `json:"players"`
+	Board   [][]string        `json:"board"`
 }
 
 func NewGame(server *socketio.Server) *Game {
@@ -69,9 +69,9 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 		so.Join(gameRoom)
 
 		if len(self.players) == maxCountPlayers {
-			var players []Player
+			var players = map[string]Player{}
 			for _, p := range self.players {
-				players = append(players, *p)
+				players[p.Id] = *p
 			}
 
 			board := GenerateBoard()

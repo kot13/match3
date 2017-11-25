@@ -29,15 +29,20 @@ class Game {
 
     onStart(stateJson) {
         let state = JSON.parse(stateJson);
-        log(state.players, state.board);
+        let currentPlayer = state.players[this.socket.id];
 
-        this.player = new Player(pgame, this.socket.id, userName);
-        this.enemy = new Player(pgame, this.socket.id, 'ENEMY');
+        if (currentPlayer === undefined) {
+            log('Not found current player');
+            return
+        }
+
+        this.player = new Player(pgame, currentPlayer.id, currentPlayer.name);
+        this.enemy = new Enemy(pgame);
 
         this.player.create(10, 40);
         this.enemy.create(600, 40, true);
 
-        this.board = new Board(pgame,70,330,7,7);
+        this.board = new Board(pgame, 70, 330, 7, 7);
         this.board.fill(state.board);
     }
 
