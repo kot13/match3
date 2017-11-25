@@ -130,9 +130,9 @@ class Game {
 
     onWin(playerId) {
         if (playerId === this.socket.id) {
-            alert('You victory');
+            pgame.state.start("Victory");
         } else {
-            alert('You lose');
+            pgame.state.start("Lose");
         }
     }
 
