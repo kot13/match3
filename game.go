@@ -14,8 +14,10 @@ const (
 	gameDuration    = 30
 )
 
-var playersLock = sync.Mutex{}
-var CurrentPlayer string
+type CurrentPlayer struct {
+	sync.RWMutex
+	id string
+}
 
 type Game struct {
 	server  *socketio.Server
@@ -28,6 +30,9 @@ type GameState struct {
 	CurrentPlayer string            `json:"currentPlayer"`
 	NewGems       [][]string        `json:"newGems"`
 }
+
+var playersLock = sync.Mutex{}
+var currentPlayer CurrentPlayer = CurrentPlayer{}
 
 func NewGame(server *socketio.Server) *Game {
 	game := &Game{server: server, players: map[socketio.Socket]*Player{}}
@@ -67,7 +72,9 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 		player := NewPlayer(so.Id(), newPlayer.Name, newPlayer.Skin)
 		log.Println("Set player id: ", so.Id())
 
-		CurrentPlayer = so.Id()
+		currentPlayer.Lock()
+		currentPlayer.id = so.Id()
+		currentPlayer.Unlock()
 
 		func() {
 			playersLock.Lock()
@@ -87,7 +94,7 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 			state, _ := json.Marshal(GameState{
 				Players:       players,
 				Board:         board,
-				CurrentPlayer: CurrentPlayer,
+				CurrentPlayer: currentPlayer.id,
 			})
 
 			so.BroadcastTo(gameRoom, "start", string(state))
@@ -126,8 +133,6 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 	})
 
 	so.On("turn", func(msg string) {
-		//log.Println("turn: ", msg)
-
 		data := struct {
 			Board [][]string `json:"board"`
 		}{}
@@ -145,26 +150,21 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 		}
 
 		if BoardIsEmpty(newGems) {
-			log.Println("Board is empty")
-			log.Println("Old currentPlayer: ", CurrentPlayer)
+			currentPlayer.Lock()
 			for _, p := range self.players {
-				log.Println("Player: ", p.Id)
-				if CurrentPlayer != p.Id {
-					log.Println("Try change currentPlayer: ", CurrentPlayer, " to: ", p.Id)
-					CurrentPlayer = p.Id
+				if currentPlayer.id != p.Id {
+					currentPlayer.id = p.Id
 					break
 				}
 			}
-			log.Println("New currentPlayer: ", CurrentPlayer)
-		} else {
-			log.Println(newGems)
+			currentPlayer.Unlock()
 		}
 
 		state, _ := json.Marshal(GameState{
 			Players:       players,
 			Board:         boardWithoutKilled,
 			NewGems:       newGems,
-			CurrentPlayer: CurrentPlayer,
+			CurrentPlayer: currentPlayer.id,
 		})
 
 		so.BroadcastTo(gameRoom, "boardUpdate", string(state))
