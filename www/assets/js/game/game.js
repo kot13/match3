@@ -16,6 +16,10 @@ class Game {
     create() {
         this.initNetwork();
 
+        this.player = new Player(pgame, this.socket.id, userName);
+        this.player.preload();
+        this.player.create();
+
         this.socket.emit('joinNewPlayer', userName);
         log('Ожидаем второго игрока');
     }

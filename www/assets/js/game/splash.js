@@ -21,6 +21,8 @@ class Splash {
         pgame.load.script('menu', 'assets/js/game/menu.js');
         pgame.load.script('game', 'assets/js/game/game.js');
         pgame.load.script('player', 'assets/js/game/player.js');
+
+        pgame.load.spritesheet('catstay', '/assets/images/sprites/cat/stay.png', 138, 121, 8);
     }
 
     create() {
