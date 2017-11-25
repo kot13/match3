@@ -12,8 +12,10 @@ const (
 	gameRoom        = "game"
 	maxCountPlayers = 2
 	gameDuration    = 30
+	minMimimi       = 0
 	maxMimimi       = 100
 	minEnergy       = 0
+	maxEnergy       = 100
 )
 
 type CurrentPlayer struct {
@@ -151,14 +153,20 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 			if so.Id() == p.Id {
 				p.Energy += scores.Energy
 				p.Mimimi += scores.Mimimi
-				if p.Mimimi < 0 {
-					p.Mimimi = 0
+				if p.Mimimi < minMimimi {
+					p.Mimimi = minMimimi
+				}
+				if p.Energy > maxEnergy {
+					p.Mimimi = maxEnergy
 				}
 			} else {
 				p.Energy += scores.EnemyEnergy
 				p.Mimimi += scores.EnemyMimimi
-				if p.Mimimi < 0 {
-					p.Mimimi = 0
+				if p.Mimimi < minMimimi {
+					p.Mimimi = minMimimi
+				}
+				if p.Energy > maxEnergy {
+					p.Mimimi = maxEnergy
 				}
 			}
 			players[p.Id] = *p
