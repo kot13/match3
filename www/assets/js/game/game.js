@@ -2,11 +2,15 @@
 
 class Game {
     constructor() {
+        this.background = pgame.make.sprite(0, 0, 'splash_bg');
+        this.background.width = pgame.width;
+        this.background.height = pgame.height;
+
         this.players = new Map();
     }
 
     preload() {
-
+        pgame.add.existing(this.background);
     }
 
     create() {
