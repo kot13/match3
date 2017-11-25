@@ -136,6 +136,8 @@ class Game {
         let state = JSON.parse(stateJson);
         currentPlayer = state.currentPlayer;
 
+        log(currentPlayer);
+
         for (let key in state.players) {
             if (key === this.socket.id) {
                 this.myEnergyBar.setPercent();

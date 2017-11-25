@@ -1,6 +1,6 @@
 package main
 
-const DefaultEnergy = 0
+const DefaultEnergy = 100
 const DefaultMimimi = 0
 
 type Player struct {

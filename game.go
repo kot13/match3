@@ -15,7 +15,7 @@ const (
 )
 
 var playersLock = sync.Mutex{}
-var currentPlayer string
+var CurrentPlayer string
 
 type Game struct {
 	server  *socketio.Server
@@ -26,11 +26,7 @@ type GameState struct {
 	Players       map[string]Player `json:"players"`
 	Board         [][]string        `json:"board"`
 	CurrentPlayer string            `json:"currentPlayer"`
-}
-
-type GameStateUpdate struct {
-	Board   [][]string `json:"board"`
-	NewGems [][]string `json:"newGems"`
+	NewGems       [][]string        `json:"newGems"`
 }
 
 func NewGame(server *socketio.Server) *Game {
@@ -71,7 +67,7 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 		player := NewPlayer(so.Id(), newPlayer.Name, newPlayer.Skin)
 		log.Println("Set player id: ", so.Id())
 
-		currentPlayer = so.Id()
+		CurrentPlayer = so.Id()
 
 		func() {
 			playersLock.Lock()
@@ -91,7 +87,7 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 			state, _ := json.Marshal(GameState{
 				Players:       players,
 				Board:         board,
-				CurrentPlayer: currentPlayer,
+				CurrentPlayer: CurrentPlayer,
 			})
 
 			so.BroadcastTo(gameRoom, "start", string(state))
@@ -130,7 +126,7 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 	})
 
 	so.On("turn", func(msg string) {
-		log.Println("turn: ", msg)
+		//log.Println("turn: ", msg)
 
 		data := struct {
 			Board [][]string `json:"board"`
@@ -141,11 +137,34 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 			return
 		}
 
-		boardWithoudKilled, newGems := RegenarateBoard(data.Board)
+		boardWithoutKilled, newGems := RegenarateBoard(data.Board)
 
-		state, _ := json.Marshal(GameStateUpdate{
-			Board:   boardWithoudKilled,
-			NewGems: newGems,
+		var players = map[string]Player{}
+		for _, p := range self.players {
+			players[p.Id] = *p
+		}
+
+		if BoardIsEmpty(newGems) {
+			log.Println("Board is empty")
+			log.Println("Old currentPlayer: ", CurrentPlayer)
+			for _, p := range self.players {
+				log.Println("Player: ", p.Id)
+				if CurrentPlayer != p.Id {
+					log.Println("Try change currentPlayer: ", CurrentPlayer, " to: ", p.Id)
+					CurrentPlayer = p.Id
+					break
+				}
+			}
+			log.Println("New currentPlayer: ", CurrentPlayer)
+		} else {
+			log.Println(newGems)
+		}
+
+		state, _ := json.Marshal(GameState{
+			Players:       players,
+			Board:         boardWithoutKilled,
+			NewGems:       newGems,
+			CurrentPlayer: CurrentPlayer,
 		})
 
 		so.BroadcastTo(gameRoom, "boardUpdate", string(state))

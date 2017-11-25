@@ -146,3 +146,15 @@ func duplicateBoard(board [][]string) [][]string {
 	}
 	return duplicate
 }
+
+func BoardIsEmpty(board [][]string) bool {
+	for i := 0; i < len(board); i++ {
+		for j := 0; j < len(board[i]); j++ {
+			if board[i][j] != "" {
+				return false
+			}
+		}
+	}
+
+	return true
+}
