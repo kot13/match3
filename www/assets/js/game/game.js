@@ -21,6 +21,48 @@ class Game {
             skin: skin
         }));
         log('Ожидаем второго игрока');
+    }
+
+    update() {
+
+    }
+
+    initNetwork() {
+        this.socket = io.connect(window.location.host, {path: '/ws/', transports: ['websocket']});
+        this.socket.on('playerDisconnected', (msg) => this.onPlayerDisconnected(msg));
+        this.socket.on('start', (state) => this.onStart(state));
+        this.socket.on('win', (playerId) => this.onWin(playerId));
+        this.socket.on('boardUpdate', (state) => this.onBoardUpdate(state));
+    }
+
+    onStart(stateJson) {
+        let state = JSON.parse(stateJson);
+        for (let key in state.players) {
+            if (key === this.socket.id) {
+                this.player = new Player(
+                    pgame,
+                    state.players[key].id,
+                    state.players[key].name,
+                    state.players[key].skin,
+                    state.players[key].energy,
+                    state.players[key].mimimi
+                );
+                this.player.create(10, 40);
+            } else {
+                this.enemy = new Enemy(
+                    pgame,
+                    state.players[key].skin,
+                    state.players[key].energy,
+                    state.players[key].mimimi
+                );
+                this.enemy.create(600, 40, true);
+            }
+        }
+
+        if (this.player === undefined || this.enemy === undefined) {
+            log('Not init players');
+            return;
+        }
 
         let barConfig = {
             x: 110,
@@ -68,49 +110,11 @@ class Game {
         this.enemyMimimiBar = new HealthBar(pgame, barConfig);
         this.enemyMimimiBar.setPercent(0);
 
-    }
+        this.message = pgame.add.text(0, 0, '', {fill: 'white', align: 'center', stroke: 'rgba(0,0,0,0)', strokeThickness: 4});
+        this.message.y = 30;
 
-    update() {
+        this.setCurrentUser(state);
 
-    }
-
-    initNetwork() {
-        this.socket = io.connect(window.location.host, {path: '/ws/', transports: ['websocket']});
-        this.socket.on('playerDisconnected', (msg) => this.onPlayerDisconnected(msg));
-        this.socket.on('start', (state) => this.onStart(state));
-        this.socket.on('win', (playerId) => this.onWin(playerId));
-        this.socket.on('boardUpdate', (state) => this.onBoardUpdate(state));
-    }
-
-    onStart(stateJson) {
-        let state = JSON.parse(stateJson);
-        for (let key in state.players) {
-            if (key === this.socket.id) {
-                this.player = new Player(
-                    pgame,
-                    state.players[key].id,
-                    state.players[key].name,
-                    state.players[key].skin,
-                    state.players[key].energy,
-                    state.players[key].mimimi
-                );
-                this.player.create(10, 40);
-            } else {
-                this.enemy = new Enemy(
-                    pgame,
-                    state.players[key].skin,
-                    state.players[key].energy,
-                    state.players[key].mimimi
-                );
-                this.enemy.create(600, 40, true);
-            }
-        }
-
-        if (this.player === undefined || this.enemy === undefined) {
-            log('Not init players');
-            return;
-        }
-        currentPlayer = state.currentPlayer;
         this.board = new Board(pgame, this.socket, 70, 330, 7, 7);
         this.board.fill(state.board);
     }
@@ -134,9 +138,7 @@ class Game {
 
     onBoardUpdate(stateJson) {
         let state = JSON.parse(stateJson);
-        currentPlayer = state.currentPlayer;
-
-        log(currentPlayer);
+        this.setCurrentUser(state);
 
         for (let key in state.players) {
             if (key === this.socket.id) {
@@ -149,5 +151,16 @@ class Game {
         }
 
         this.board.refill(state.board, state.newGems);
+    }
+
+    setCurrentUser(state) {
+        currentPlayer = state.currentPlayer;
+        if (currentPlayer === this.socket.id) {
+            this.message.setText('Котик, ходи!');
+            this.message.x = pgame.width / 2.0 - this.message.width / 2.0;
+        } else {
+            this.message.setText('Ходит другой котик');
+            this.message.x = pgame.width / 2.0 - this.message.width / 2.0;
+        }
     }
 }

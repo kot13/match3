@@ -12,6 +12,8 @@ const (
 	gameRoom        = "game"
 	maxCountPlayers = 2
 	gameDuration    = 30
+	maxMimimi       = 100
+	minEnergy       = 0
 )
 
 type CurrentPlayer struct {
@@ -165,6 +167,29 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 				}
 			}
 			currentPlayer.Unlock()
+
+			// check winner +
+			var loserId string
+			for _, p := range self.players {
+				if p.Mimimi >= maxMimimi {
+					so.BroadcastTo(gameRoom, "win", p.Id)
+					so.Emit("win", p.Id)
+					return
+				}
+				if p.Energy <= minEnergy {
+					loserId = p.Id
+				}
+			}
+			if loserId != "" {
+				for _, p := range self.players {
+					if loserId != p.Id {
+						so.BroadcastTo(gameRoom, "win", p.Id)
+						so.Emit("win", p.Id)
+						return
+					}
+				}
+			}
+			// check winner -
 		}
 
 		state, _ := json.Marshal(GameState{
