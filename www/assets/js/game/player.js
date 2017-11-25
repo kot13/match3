@@ -10,13 +10,11 @@ class Player {
         this.catStaySprite  = null;
     }
 
-    preload() {
-       // this.game.load.spritesheet('catstay', '/assets/images/sprites/cat/stay.png', 121, 121, 10);
-    }
+    preload() {}
 
     create(x, y, invertSprite) {
         invertSprite = invertSprite || false;
-        this.catStaySprite  = this.game.add.sprite(x, y, 'catstay');
+        this.catStaySprite  = this.game.add.sprite(x, y, 'cat_gray_stay');
         if (invertSprite) {
             console.log('enemysprite')
             this.catStaySprite.scale.x = -1;
@@ -26,7 +24,7 @@ class Player {
         //this.catStaySprite.scale.y *= -1;
 
 
-        this.anim = this.catStaySprite.animations.add('catstay');
+        this.anim = this.catStaySprite.animations.add('cat_gray_stay');
 
         this.anim.onStart.add(this.animationStarted, this);
         this.anim.onLoop.add(this.animationLooped, this);

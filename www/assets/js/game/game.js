@@ -16,7 +16,10 @@ class Game {
     create() {
         this.initNetwork();
 
-        this.socket.emit('joinNewPlayer', userName);
+        this.socket.emit('joinNewPlayer', JSON.stringify({
+            name: userName,
+            skin: skin
+        }));
         log('Ожидаем второго игрока');
     }
 
@@ -31,9 +34,11 @@ class Game {
         let state = JSON.parse(stateJson);
         let currentPlayer = state.players[this.socket.id];
 
+        console.log(state.players);
+
         if (currentPlayer === undefined) {
             log('Not found current player');
-            return
+            return;
         }
 
         this.player = new Player(pgame, currentPlayer.id, currentPlayer.name);
