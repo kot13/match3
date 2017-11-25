@@ -11,6 +11,7 @@ class Game {
 
     preload() {
         pgame.add.existing(this.background);
+        this.board = new Board(pgame,70,360,7,7)
     }
 
     create() {
