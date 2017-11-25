@@ -142,14 +142,21 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 			return
 		}
 
-		boardWithoutKilled, newGems := RegenarateBoard(data.Board)
+		boardWithoutKilled, newGems, scores := RegenarateBoard(data.Board)
 
 		var players = map[string]Player{}
 		for _, p := range self.players {
+			if so.Id() == p.Id {
+				p.Energy = scores.Energy
+				p.Mimimi = scores.Mimimi
+			} else {
+				p.Energy = scores.EnemyEnergy
+				p.Mimimi = scores.EnemyMimimi
+			}
 			players[p.Id] = *p
 		}
 
-		if BoardIsEmpty(newGems) {
+		if IsEmptyBoard(newGems) {
 			currentPlayer.Lock()
 			for _, p := range self.players {
 				if currentPlayer.id != p.Id {

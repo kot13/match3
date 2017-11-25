@@ -2,27 +2,109 @@ package main
 
 import (
 	"math/rand"
+	"time"
 )
 
 const countCols = 7
 const countRows = 7
 const minMatch = 3
 
-var gems = []string{"gem1", "gem2", "gem3", "gem4", "gem5"}
+type Gem struct {
+	Name                  string
+	Energy                int
+	AdditionalEnergy      int
+	Mimimi                int
+	AdditionalMimimi      int
+	EnemyEnergy           int
+	EnemyAdditionalEnergy int
+	EnemyMimimi           int
+	EnemyAdditionalMimimi int
+}
+
+type Killed struct {
+	Name  string
+	Count int
+}
+
+type Scores struct {
+	Energy      int
+	Mimimi      int
+	EnemyEnergy int
+	EnemyMimimi int
+}
+
+var gems = []Gem{
+	Gem{
+		Name:                  "gem1",
+		Energy:                -3,
+		AdditionalEnergy:      -1,
+		Mimimi:                5,
+		AdditionalMimimi:      1,
+		EnemyEnergy:           0,
+		EnemyAdditionalEnergy: 0,
+		EnemyMimimi:           0,
+		EnemyAdditionalMimimi: 0,
+	},
+	Gem{
+		Name:                  "gem2",
+		Energy:                0,
+		AdditionalEnergy:      0,
+		Mimimi:                0,
+		AdditionalMimimi:      0,
+		EnemyEnergy:           0,
+		EnemyAdditionalEnergy: 0,
+		EnemyMimimi:           -5,
+		EnemyAdditionalMimimi: -1,
+	},
+	Gem{
+		Name:                  "gem3",
+		Energy:                0,
+		AdditionalEnergy:      0,
+		Mimimi:                2,
+		AdditionalMimimi:      1,
+		EnemyEnergy:           0,
+		EnemyAdditionalEnergy: 0,
+		EnemyMimimi:           0,
+		EnemyAdditionalMimimi: 0,
+	},
+	Gem{
+		Name:                  "gem4",
+		Energy:                5,
+		AdditionalEnergy:      1,
+		Mimimi:                0,
+		AdditionalMimimi:      0,
+		EnemyEnergy:           0,
+		EnemyAdditionalEnergy: 0,
+		EnemyMimimi:           0,
+		EnemyAdditionalMimimi: 0,
+	},
+	Gem{
+		Name:                  "gem5",
+		Energy:                0,
+		AdditionalEnergy:      0,
+		Mimimi:                -2,
+		AdditionalMimimi:      -1,
+		EnemyEnergy:           -5,
+		EnemyAdditionalEnergy: -1,
+		EnemyMimimi:           0,
+		EnemyAdditionalMimimi: 0,
+	},
+}
 
 func GenerateBoard() (board [][]string) {
 	board = fillBoard()
-	for !isDeadBoard(board) || hasMatches(board) {
+	for isDeadBoard(board) || hasMatches(board) {
 		board = fillBoard()
 	}
 	return
 }
 
 func fillBoard() (board [][]string) {
+	rand.Seed(time.Now().UnixNano())
 	for i := 0; i < countRows; i++ {
 		var line []string
 		for j := 0; j < countCols; j++ {
-			line = append(line, gems[rand.Intn(5)])
+			line = append(line, gems[rand.Intn(5)].Name)
 		}
 		board = append(board, line)
 	}
@@ -30,7 +112,7 @@ func fillBoard() (board [][]string) {
 }
 
 func isDeadBoard(board [][]string) bool {
-	return true
+	return false
 }
 
 func hasMatches(board [][]string) bool {
@@ -77,40 +159,46 @@ func gemDirectionMatches(board [][]string, posX int, posY int, moveX int, moveY 
 	return
 }
 
-func RegenarateBoard(board [][]string) ([][]string, [][]string) {
-	boardWithoudKilled := killMatches(board)
-	newGems := refillBoard(boardWithoudKilled)
-	for !isDeadBoard(newGems) {
-		newGems = refillBoard(boardWithoudKilled)
+func RegenarateBoard(board [][]string) ([][]string, [][]string, Scores) {
+	boardWithoutKilled, killed := killMatches(board)
+	newGems := refillBoard(boardWithoutKilled)
+	for isDeadBoard(newGems) {
+		newGems = refillBoard(boardWithoutKilled)
 	}
 
 	for i := 0; i < countRows; i++ {
 		for j := 0; j < countCols; j++ {
-			if boardWithoudKilled[i][j] != "" {
+			if boardWithoutKilled[i][j] != "" {
 				newGems[i][j] = ""
 			}
 		}
 	}
 
-	return boardWithoudKilled, newGems
+	return boardWithoutKilled, newGems, calcScores(killed)
 }
 
-func killMatches(board [][]string) [][]string {
+func killMatches(board [][]string) ([][]string, []Killed) {
 	result := duplicateBoard(board)
+	var killed []Killed
 	for i := 0; i < countCols; i++ {
 		for j := 0; j < countRows; j++ {
+			name := result[i][j]
+			countKilled := 1
 			countUp, countDown, countLeft, countRight := gemMatches(result, j, i)
-			countVert := countUp + countDown + 1
-			countHoriz := countLeft + countRight + 1
-			if countHoriz >= minMatch {
+			if countLeft+countRight+1 >= minMatch {
+				countKilled += countLeft + countRight
 				result = killMatch(result, j-countLeft, i, j+countRight, i)
 			}
-			if countVert >= minMatch {
+			if countUp+countDown+1 >= minMatch {
+				countKilled += countUp + countDown
 				result = killMatch(result, j, i-countUp, j, i+countDown)
+			}
+			if countKilled > 1 {
+				killed = append(killed, Killed{Name: name, Count: countKilled})
 			}
 		}
 	}
-	return result
+	return result, killed
 }
 
 func killMatch(board [][]string, startX int, startY int, endX int, endY int) [][]string {
@@ -125,10 +213,11 @@ func killMatch(board [][]string, startX int, startY int, endX int, endY int) [][
 
 func refillBoard(board [][]string) [][]string {
 	result := duplicateBoard(board)
+	rand.Seed(time.Now().UnixNano())
 	for i := 0; i < countRows; i++ {
 		for j := 0; j < countCols; j++ {
 			if result[i][j] == "" {
-				result[i][j] = gems[rand.Intn(5)]
+				result[i][j] = gems[rand.Intn(5)].Name
 			}
 		}
 	}
@@ -147,7 +236,7 @@ func duplicateBoard(board [][]string) [][]string {
 	return duplicate
 }
 
-func BoardIsEmpty(board [][]string) bool {
+func IsEmptyBoard(board [][]string) bool {
 	for i := 0; i < len(board); i++ {
 		for j := 0; j < len(board[i]); j++ {
 			if board[i][j] != "" {
@@ -157,4 +246,31 @@ func BoardIsEmpty(board [][]string) bool {
 	}
 
 	return true
+}
+
+func calcScores(killed []Killed) Scores {
+	scores := Scores{
+		Energy:      0,
+		Mimimi:      0,
+		EnemyEnergy: 0,
+		EnemyMimimi: 0,
+	}
+	for i := 0; i < len(killed); i++ {
+		gem := findGemByName(killed[i].Name)
+		bonus := killed[i].Count
+		scores.Energy += gem.Energy + bonus*gem.AdditionalEnergy
+		scores.Mimimi += gem.Mimimi + bonus*gem.AdditionalMimimi
+		scores.EnemyEnergy += gem.EnemyEnergy + bonus*gem.EnemyAdditionalEnergy
+		scores.EnemyMimimi += gem.EnemyMimimi + bonus*gem.EnemyAdditionalMimimi
+	}
+	return scores
+}
+
+func findGemByName(name string) Gem {
+	for i := 0; i < len(gems); i++ {
+		if gems[i].Name == name {
+			return gems[i]
+		}
+	}
+	return gems[0]
 }
