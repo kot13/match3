@@ -67,7 +67,7 @@ class Board {
                         var icon = newGems[j][i];
                         gem.loadTexture(icon);
                         this.setGemPos(gem, i, j);
-                        this.tweenGemPos(gem, gem.posX, gem.posY, gemsMissingFromCol * 2);
+                        this.tweenGemPos(gem, gem.posX, gem.posY);
                     }
                 }
 
@@ -76,16 +76,6 @@ class Board {
 
             this.pGame.time.events.add(maxGemsMissingFromCol * 2 * 100, this.sendBoard, this);
         }
-    }
-
-    sendBoard() {
-        if (this.isCurrentPlayer()) {
-            this.socket.emit('turn', this.getGemsData());
-        }
-    }
-
-    isCurrentPlayer() {
-        return this.socket.id === currentPlayer;
     }
 
     getGemsData() {
@@ -100,34 +90,6 @@ class Board {
         }
 
         return JSON.stringify({board: board});
-    }
-
-    // look for gems with empty space beneath them and move them down
-    dropGems() {
-
-        var dropRowCountMax = 0;
-
-        for (var i = 0; i < this.cols; i++) {
-            var dropRowCount = 0;
-
-            for (var j = this.rows - 1; j >= 0; j--) {
-                var gem = this.getGem(i, j);
-
-                if (gem === null) {
-                    dropRowCount++;
-                }
-                else if (dropRowCount > 0) {
-                    gem.dirty = true;
-                    this.setGemPos(gem, gem.posX, gem.posY + dropRowCount);
-                    this.tweenGemPos(gem, gem.posX, gem.posY, dropRowCount);
-                }
-            }
-
-            dropRowCountMax = Math.max(dropRowCount, dropRowCountMax);
-        }
-
-        return dropRowCountMax;
-
     }
 
     // select a gem and remember its starting position
@@ -153,8 +115,8 @@ class Board {
         // 3) drop down gems above removed gems
         // 4) refill the board
 
-        var canKill = this.checkAndKillGemMatches(this.selectedGem);
-        canKill = this.checkAndKillGemMatches(this.tempShiftedGem) || canKill;
+        var canKill = this.isCanKill(this.selectedGem);
+        canKill = this.isCanKill(this.tempShiftedGem) || canKill;
 
         if (!canKill) // there are no matches so swap the gems back to the original positions
         {
@@ -179,13 +141,6 @@ class Board {
         } else {
             this.sendBoard();
         }
-
-        // this.removeKilledGems();
-        //
-        // var dropGemDuration = this.dropGems();
-        //
-        // // delay board refilling until all existing gems have dropped down
-        // this.pGame.time.events.add(dropGemDuration * 100, this.refill, this);
 
         this.allowInput = true;
 
@@ -251,12 +206,8 @@ class Board {
     }
 
     // animated gem movement
-    tweenGemPos(gem, newPosX, newPosY, durationMultiplier) {
+    tweenGemPos(gem, newPosX, newPosY) {
 
-        console.log('Tween ', gem.name, ' from ', gem.posX, ',', gem.posY, ' to ', newPosX, ',', newPosY);
-        if (durationMultiplier === null || typeof durationMultiplier === 'undefined') {
-            durationMultiplier = 1;
-        }
         gem.y = this.posY + gem.posY * this.gem_size - 30;
         gem.x = this.posX + gem.posX * this.gem_size;
         return this.pGame.add.tween(gem).to({
@@ -269,7 +220,7 @@ class Board {
     // count how many gems of the same color are above, below, to the left and right
     // if there are more than 3 matched horizontally or vertically, kill those gems
     // if no match was made, move the gems back into their starting positions
-    checkAndKillGemMatches(gem) {
+    isCanKill(gem) {
 
         if (gem === null) {
             return;
@@ -287,13 +238,7 @@ class Board {
         var countHoriz = countLeft + countRight + 1;
         var countVert = countUp + countDown + 1;
 
-        if (countVert >= this.match_min) {
-            // this.killGemRange(gem.posX, gem.posY - countUp, gem.posX, gem.posY + countDown);
-            canKill = true;
-        }
-
-        if (countHoriz >= this.match_min) {
-            // this.killGemRange(gem.posX - countLeft, gem.posY, gem.posX + countRight, gem.posY);
+        if (countVert >= this.match_min || countHoriz >= this.match_min) {
             canKill = true;
         }
 
@@ -320,21 +265,14 @@ class Board {
 
     }
 
-    // kill all gems from a starting position to an end position
-    killGemRange(fromX, fromY, toX, toY) {
-
-        fromX = Phaser.Math.clamp(fromX, 0, this.cols - 1);
-        fromY = Phaser.Math.clamp(fromY, 0, this.rows - 1);
-        toX = Phaser.Math.clamp(toX, 0, this.cols - 1);
-        toY = Phaser.Math.clamp(toY, 0, this.rows - 1);
-
-        for (var i = fromX; i <= toX; i++) {
-            for (var j = fromY; j <= toY; j++) {
-                var gem = this.getGem(i, j);
-                gem.kill();
-            }
+    sendBoard() {
+        if (this.isCurrentPlayer()) {
+            this.socket.emit('turn', this.getGemsData());
         }
+    }
 
+    isCurrentPlayer() {
+        return this.socket.id === currentPlayer;
     }
 
     // find a gem on the board according to its position on the board
@@ -365,10 +303,6 @@ class Board {
 
         return gem.key;
 
-    }
-
-    getRandIcon() {
-        return 'gem' + this.pGame.rnd.integerInRange(1, 5);
     }
 
     setGemPos(gem, posX, posY) {
