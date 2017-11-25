@@ -2,11 +2,12 @@
 
 class Player {
 
-    constructor(phaserGame, id, name) {
+    constructor(phaserGame, id, name, skin) {
         this.id   = id;
         this.name = name;
         this.game = phaserGame;
         this.anim = null;
+        this.skin = skin;
         this.catStaySprite  = null;
     }
 
@@ -14,7 +15,7 @@ class Player {
 
     create(x, y, invertSprite) {
         invertSprite = invertSprite || false;
-        this.catStaySprite  = this.game.add.sprite(x, y, 'cat_gray_stay');
+        this.catStaySprite  = this.game.add.sprite(x, y, this.skin+'_stay');
         if (invertSprite) {
             console.log('enemysprite')
             this.catStaySprite.scale.x = -1;
@@ -24,7 +25,7 @@ class Player {
         //this.catStaySprite.scale.y *= -1;
 
 
-        this.anim = this.catStaySprite.animations.add('cat_gray_stay');
+        this.anim = this.catStaySprite.animations.add(this.skin+'_stay');
 
         this.anim.onStart.add(this.animationStarted, this);
         this.anim.onLoop.add(this.animationLooped, this);
