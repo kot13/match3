@@ -24,11 +24,11 @@ class Splash {
         pgame.load.script('enemy', 'assets/js/game/enemy.js');
         pgame.load.script('board', 'assets/js/game/board.js');
 
-        pgame.load.image('gem1', 'assets/images/heart.png');
-        pgame.load.image('gem2', 'assets/images/gemGreen.png');
-        pgame.load.image('gem3', 'assets/images/gemBlue.png');
-        pgame.load.image('gem4', 'assets/images/gemRed.png');
-        pgame.load.image('gem5', 'assets/images/upg_dagger.png');
+        pgame.load.image('gem1', 'assets/images/klubok.png');
+        pgame.load.image('gem2', 'assets/images/valera.png');
+        pgame.load.image('gem3', 'assets/images/morda.png');
+        pgame.load.image('gem4', 'assets/images/ryba.png');
+        pgame.load.image('gem5', 'assets/images/lapa.png');
 
         pgame.load.image('cat_gray','assets/images/cat1.png');
         pgame.load.image('cat_ginger','assets/images/cat2.png');
