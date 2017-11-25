@@ -75,7 +75,9 @@ class Board {
                 maxGemsMissingFromCol = Math.max(maxGemsMissingFromCol, gemsMissingFromCol);
             }
 
-            this.pGame.time.events.add(maxGemsMissingFromCol * 2 * 100, this.sendBoard, this);
+            if (this.isCurrentPlayer()) {
+                this.pGame.time.events.add(maxGemsMissingFromCol * 2 * 100, this.sendBoard, this);
+            }
         }
     }
 
