@@ -5,7 +5,7 @@ let userName;
 
 class Main {
     constructor(width, height, contanerName) {
-        pgame = new Phaser.Game(width, height, Phaser.AUTO, contanerName, {
+        pgame = new Phaser.Game(widtgh, height, Phaser.AUTO, contanerName, {
             preload: () => this.preload(), create: () => this.create(), render: () => this.render()
         });
     }

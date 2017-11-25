@@ -21,6 +21,13 @@ class Splash {
         pgame.load.script('menu', 'assets/js/game/menu.js');
         pgame.load.script('game', 'assets/js/game/game.js');
         pgame.load.script('player', 'assets/js/game/player.js');
+        pgame.load.script('board', 'assets/js/game/board.js');
+
+        pgame.load.image('gem1', 'assets/images/heart.png');
+        pgame.load.image('gem2', 'assets/images/gemGreen.png');
+        pgame.load.image('gem3', 'assets/images/gemBlue.png');
+        pgame.load.image('gem4', 'assets/images/gemRed.png');
+        pgame.load.image('gem5', 'assets/images/upg_dagger.png');
     }
 
     create() {
