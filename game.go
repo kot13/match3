@@ -151,9 +151,15 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 			if so.Id() == p.Id {
 				p.Energy += scores.Energy
 				p.Mimimi += scores.Mimimi
+				if p.Mimimi < 0 {
+					p.Mimimi = 0
+				}
 			} else {
 				p.Energy += scores.EnemyEnergy
 				p.Mimimi += scores.EnemyMimimi
+				if p.Mimimi < 0 {
+					p.Mimimi = 0
+				}
 			}
 			players[p.Id] = *p
 		}
