@@ -40,7 +40,7 @@ class Splash {
         pgame.load.image('cat_lock','assets/images/cat-lock.png');
 
         pgame.load.spritesheet('cat_gray_stay', '/assets/images/sprites/cat-gray/stay.png', 273, 237, 17);
-        pgame.load.spritesheet('cat_gray_stay', '/assets/images/sprites/cat-gray/klubok.png', 277, 237, 3);
+        pgame.load.spritesheet('cat_gray_mimi', '/assets/images/sprites/cat-gray/klubok.png', 277, 237, 3);
 
         pgame.load.spritesheet('cat_ginger_stay', '/assets/images/sprites/cat-ginger/stay.png', 273, 237, 17);
 
