@@ -91,7 +91,7 @@ class Game {
                     state.players[key].id,
                     state.players[key].name,
                     state.players[key].skin,
-                    state.players[key].tiredness,
+                    state.players[key].energy,
                     state.players[key].mimimi
                 );
                 this.player.create(10, 40);
@@ -99,7 +99,7 @@ class Game {
                 this.enemy = new Enemy(
                     pgame,
                     state.players[key].skin,
-                    state.players[key].tiredness,
+                    state.players[key].energy,
                     state.players[key].mimimi
                 );
                 this.enemy.create(600, 40, true);
@@ -140,11 +140,11 @@ class Game {
 
         for (let key in state.players) {
             if (key === this.socket.id) {
-                this.myEnergyBar.setPercent();
-                this.myMimimiBar.setPercent();
+                this.myEnergyBar.setPercent(state.players[key].energy);
+                this.myMimimiBar.setPercent(state.players[key].mimimi);
             } else {
-                this.enemyEnergyBar.setPercent();
-                this.enemyMimimiBar.setPercent();
+                this.enemyEnergyBar.setPercent(state.players[key].energy);
+                this.enemyMimimiBar.setPercent(state.players[key].mimimi);
             }
         }
 
