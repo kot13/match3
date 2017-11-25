@@ -7,16 +7,27 @@ class Player {
         this.name = name;
         this.game = phaserGame;
         this.anim = null;
-        this.cat  = null;
+        this.catStaySprite  = null;
     }
 
     preload() {
        // this.game.load.spritesheet('catstay', '/assets/images/sprites/cat/stay.png', 121, 121, 10);
+
     }
 
-    create() {
-        this.cat  = this.game.add.sprite(10, 40, 'catstay');
-        this.anim = this.cat.animations.add('catstay');
+    create(x, y, invertSprite) {
+        invertSprite = invertSprite || false;
+        this.catStaySprite  = this.game.add.sprite(x, y, 'catstay');
+        if (invertSprite) {
+            console.log('enemysprite')
+            this.catStaySprite.scale.x = -1;
+           // this.catStaySprite.x = 100;
+           // this.catStaySprite.y = 500;
+        }
+        //this.catStaySprite.scale.y *= -1;
+
+
+        this.anim = this.catStaySprite.animations.add('catstay');
 
         this.anim.onStart.add(this.animationStarted, this);
         this.anim.onLoop.add(this.animationLooped, this);

@@ -18,8 +18,10 @@ class Game {
         this.initNetwork();
 
         this.player = new Player(pgame, this.socket.id, userName);
-        this.player.preload();
-        this.player.create();
+        this.enemy = new Player(pgame, this.socket.id, 'ENEMY');
+
+        this.player.create(10, 40);
+        this.enemy.create(600, 40, true);
 
         this.socket.emit('joinNewPlayer', userName);
         log('Ожидаем второго игрока');
