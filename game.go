@@ -4,9 +4,10 @@ import (
 	//"encoding/json"
 	"log"
 	//"sync"
-	"time"
+	//"time"
 
 	//"encoding/json"
+	"encoding/json"
 	"github.com/googollee/go-socket.io"
 	"sync"
 )
@@ -19,7 +20,7 @@ const (
 
 var (
 	playersLock = sync.Mutex{}
-	timer       = time.NewTimer(time.Second * gameDuration)
+	//timer       = time.NewTimer(time.Second * gameDuration)
 )
 
 type Game struct {
@@ -50,8 +51,7 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 	so.On("joinNewPlayer", func(playerName string) {
 		log.Println("joinNewPlayer")
 
-		playerCount := len(self.players)
-		if playerCount == maxCountPlayers {
+		if len(self.players) == maxCountPlayers {
 			log.Println("Error: max player count")
 			return
 		}
@@ -67,19 +67,34 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 
 		so.Join(gameRoom)
 
-		go func() {
-			<-timer.C
-			var maxHealth int
-			var winnerId string
+		if len(self.players) == maxCountPlayers {
+			var players []Player
 			for _, p := range self.players {
-				if p.Health > maxHealth {
-					maxHealth = p.Health
-					winnerId = p.Id
-				}
+				players = append(players, *p)
 			}
-			so.BroadcastTo(gameRoom, "win", winnerId)
-			so.Emit("win", winnerId)
-		}()
+
+			state, _ := json.Marshal(GameState{
+				Players: players,
+			})
+
+			so.BroadcastTo(gameRoom, "start", string(state))
+			so.Emit("start", string(state))
+			return
+		}
+
+		//go func() {
+		//	<-timer.C
+		//	var maxHealth int
+		//	var winnerId string
+		//	for _, p := range self.players {
+		//		if p.Health > maxHealth {
+		//			maxHealth = p.Health
+		//			winnerId = p.Id
+		//		}
+		//	}
+		//	so.BroadcastTo(gameRoom, "win", winnerId)
+		//	so.Emit("win", winnerId)
+		//}()
 	})
 
 	so.On("disconnection", func() {

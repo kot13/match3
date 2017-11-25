@@ -1,37 +1,42 @@
 'use strict';
 
 class Game {
-
     constructor() {
+        this.background = pgame.make.sprite(0, 0, 'splash_bg');
+        this.background.width = pgame.width;
+        this.background.height = pgame.height;
+
         this.players = new Map();
+    }
+
+    preload() {
+        pgame.add.existing(this.background);
     }
 
     create() {
         this.initNetwork();
-    }
 
-    update() {
+        this.player = new Player(pgame, this.socket.id, userName);
+        this.player.preload();
+        this.player.create();
 
+        this.socket.emit('joinNewPlayer', userName);
+        log('Ожидаем второго игрока');
     }
 
     initNetwork() {
-        this.socket = io.connect(window.location.host, {path: "/ws/", transports: ['websocket']});
-        this.socket.on('playerDisconnected', (msg)=>this.onPlayerDisconnected(msg));
-        this.socket.on('win', (playerId)=>this.onWin(playerId));
+        this.socket = io.connect(window.location.host, {path: '/ws/', transports: ['websocket']});
+        this.socket.on('playerDisconnected', (msg) => this.onPlayerDisconnected(msg));
+        this.socket.on('start', (players) => this.onStart(players));
+        this.socket.on('win', (playerId) => this.onWin(playerId));
     }
 
-    initControls() {
-
-    }
-
-    onPlayerConnected(playerId, playerName) {
-        log("connected player, id: " + playerId);
-        let p = new Player(pgame, playerId, playerName);
-        this.players.set(playerId, p);
+    onStart(players) {
+        log(players);
     }
 
     onPlayerDisconnected(playerId) {
-        log("disconnected player, id: " + playerId);
+        log('Disconnected player, id: ' + playerId);
 
         if (this.players.has(playerId)) {
             this.players.get(playerId).sprite.kill();
@@ -41,11 +46,9 @@ class Game {
 
     onWin(playerId) {
         if (playerId === this.socket.id) {
-            console.log("vic");
-            // pgame.state.start("Victory");
+            alert('You victory');
         } else {
-            console.log("Lose");
-            // pgame.state.start("Lose");
+            alert('You lose');
         }
     }
 }

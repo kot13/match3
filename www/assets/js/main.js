@@ -1,7 +1,7 @@
 'use strict';
 
 let pgame;
-let userName;
+let userName = 'Гость';
 
 class Main {
     constructor(width, height, contanerName) {
@@ -15,7 +15,7 @@ class Main {
         pgame.time.advancedTiming = true;
 
         pgame.load.script('splash', 'assets/js/game/splash.js');
-        pgame.load.image('splash_bg', 'assets/images/splash_bg.jpg');
+        pgame.load.image('splash_bg', 'assets/images/splash.png');
     }
 
     create() {
