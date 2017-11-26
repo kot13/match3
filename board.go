@@ -19,6 +19,8 @@ type Gem struct {
 	EnemyAdditionalEnergy int
 	EnemyMimimi           int
 	EnemyAdditionalMimimi int
+	State                 string
+	EnemyState            string
 }
 
 type Killed struct {
@@ -31,6 +33,8 @@ type Scores struct {
 	Mimimi      int
 	EnemyEnergy int
 	EnemyMimimi int
+	State       string
+	EnemyState  string
 }
 
 var gems = []Gem{
@@ -44,6 +48,8 @@ var gems = []Gem{
 		EnemyAdditionalEnergy: 0,
 		EnemyMimimi:           0,
 		EnemyAdditionalMimimi: 0,
+		State:      "gem1",
+		EnemyState: "",
 	},
 	Gem{
 		Name:                  "gem2",
@@ -55,17 +61,21 @@ var gems = []Gem{
 		EnemyAdditionalEnergy: 0,
 		EnemyMimimi:           -20,
 		EnemyAdditionalMimimi: -5,
+		State:      "gem2",
+		EnemyState: "ememyGem2",
 	},
 	Gem{
 		Name:                  "gem3",
 		Energy:                0,
 		AdditionalEnergy:      0,
-		Mimimi:                15,
+		Mimimi:                20,
 		AdditionalMimimi:      5,
 		EnemyEnergy:           0,
 		EnemyAdditionalEnergy: 0,
 		EnemyMimimi:           0,
 		EnemyAdditionalMimimi: 0,
+		State:      "gem3",
+		EnemyState: "",
 	},
 	Gem{
 		Name:                  "gem4",
@@ -77,6 +87,8 @@ var gems = []Gem{
 		EnemyAdditionalEnergy: 0,
 		EnemyMimimi:           0,
 		EnemyAdditionalMimimi: 0,
+		State:      "gem4",
+		EnemyState: "",
 	},
 	Gem{
 		Name:                  "gem5",
@@ -84,10 +96,12 @@ var gems = []Gem{
 		AdditionalEnergy:      0,
 		Mimimi:                -10,
 		AdditionalMimimi:      -5,
-		EnemyEnergy:           -20,
+		EnemyEnergy:           -15,
 		EnemyAdditionalEnergy: -5,
 		EnemyMimimi:           0,
 		EnemyAdditionalMimimi: 0,
+		State:      "gem5",
+		EnemyState: "ememyGem5",
 	},
 }
 
@@ -257,6 +271,8 @@ func calcScores(killed []Killed) Scores {
 		Mimimi:      0,
 		EnemyEnergy: 0,
 		EnemyMimimi: 0,
+		State:       "",
+		EnemyState:  "",
 	}
 	for i := 0; i < len(killed); i++ {
 		gem := findGemByName(killed[i].Name)
@@ -265,6 +281,12 @@ func calcScores(killed []Killed) Scores {
 		scores.Mimimi += gem.Mimimi + bonus*gem.AdditionalMimimi
 		scores.EnemyEnergy += gem.EnemyEnergy + bonus*gem.EnemyAdditionalEnergy
 		scores.EnemyMimimi += gem.EnemyMimimi + bonus*gem.EnemyAdditionalMimimi
+		if gem.State != "" {
+			scores.State = gem.State
+		}
+		if gem.EnemyState != "" {
+			scores.EnemyState = gem.EnemyState
+		}
 	}
 	return scores
 }

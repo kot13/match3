@@ -153,6 +153,7 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 			if so.Id() == p.Id {
 				p.Energy += scores.Energy
 				p.Mimimi += scores.Mimimi
+				p.State = scores.State
 				if p.Mimimi < minMimimi {
 					p.Mimimi = minMimimi
 				}
@@ -162,6 +163,7 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 			} else {
 				p.Energy += scores.EnemyEnergy
 				p.Mimimi += scores.EnemyMimimi
+				p.State = scores.EnemyState
 				if p.Mimimi < minMimimi {
 					p.Mimimi = minMimimi
 				}

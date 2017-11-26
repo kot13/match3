@@ -9,6 +9,7 @@ type Player struct {
 	Energy int    `json:"energy"`
 	Mimimi int    `json:"mimimi"`
 	Skin   string `json:"skin"`
+	State  string `json:state`
 }
 
 func NewPlayer(socketId string, playerName string, skin string) (player *Player) {
