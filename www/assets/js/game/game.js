@@ -20,7 +20,10 @@ class Game {
             name: userName,
             skin: skin
         }));
-        log('Ожидаем второго игрока');
+
+        this.message = pgame.add.text(0, 0, 'Ожидаем второго котика', {fill: 'white', align: 'center', stroke: 'rgba(0,0,0,0)', strokeThickness: 4});
+        this.message.x = pgame.width / 2.0 - this.message.width / 2.0;
+        this.message.y = 30;
     }
 
     update() {
@@ -45,17 +48,19 @@ class Game {
                     state.players[key].name,
                     state.players[key].skin,
                     state.players[key].energy,
-                    state.players[key].mimimi
+                    state.players[key].mimimi,
+                    10,
+                    40
                 );
-                this.player.create(10, 40);
             } else {
                 this.enemy = new Enemy(
                     pgame,
                     state.players[key].skin,
                     state.players[key].energy,
-                    state.players[key].mimimi
+                    state.players[key].mimimi,
+                    600,
+                    40
                 );
-                this.enemy.create(600, 40, true);
             }
         }
 
@@ -109,9 +114,6 @@ class Game {
         };
         this.enemyMimimiBar = new HealthBar(pgame, barConfig);
         this.enemyMimimiBar.setPercent(0);
-
-        this.message = pgame.add.text(0, 0, '', {fill: 'white', align: 'center', stroke: 'rgba(0,0,0,0)', strokeThickness: 4});
-        this.message.y = 30;
 
         this.setCurrentUser(state);
 
