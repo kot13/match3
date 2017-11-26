@@ -17,7 +17,7 @@ class Main {
         pgame.time.advancedTiming = true;
 
         pgame.load.script('splash', 'assets/js/game/splash.js');
-        pgame.load.image('splash_bg', 'assets/images/splash.png');
+        pgame.load.image('splash_bg', 'assets/images/start.png');
     }
 
     create() {

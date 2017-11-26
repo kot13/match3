@@ -2,7 +2,7 @@
 
 class Game {
     constructor() {
-        this.background = pgame.make.sprite(0, 0, 'splash_bg');
+        this.background = pgame.make.sprite(0, 0, 'game_bg');
         this.background.width = pgame.width;
         this.background.height = pgame.height;
 
