@@ -173,17 +173,18 @@ func gemDirectionMatches(board [][]string, posX int, posY int, moveX int, moveY 
 	return
 }
 
-func RegenarateBoard(board [][]string) ([][]string, [][]string, Scores) {
+func RegenarateBoard(board [][]string) ([][]string, []string, Scores) {
 	boardWithoutKilled, killed := killMatches(board)
-	newGems := refillBoard(boardWithoutKilled)
-	for isDeadBoard(newGems) {
-		newGems = refillBoard(boardWithoutKilled)
+	refiledBoard := refillBoard(boardWithoutKilled)
+	for isDeadBoard(refiledBoard) {
+		refiledBoard = refillBoard(boardWithoutKilled)
 	}
 
+	var newGems []string
 	for i := 0; i < countRows; i++ {
 		for j := 0; j < countCols; j++ {
-			if boardWithoutKilled[i][j] != "" {
-				newGems[i][j] = ""
+			if boardWithoutKilled[i][j] == "" {
+				newGems = append(newGems, refiledBoard[i][j])
 			}
 		}
 	}
@@ -251,18 +252,6 @@ func duplicateBoard(board [][]string) [][]string {
 		duplicate = append(duplicate, line)
 	}
 	return duplicate
-}
-
-func IsEmptyBoard(board [][]string) bool {
-	for i := 0; i < len(board); i++ {
-		for j := 0; j < len(board[i]); j++ {
-			if board[i][j] != "" {
-				return false
-			}
-		}
-	}
-
-	return true
 }
 
 func calcScores(killed []Killed) Scores {
