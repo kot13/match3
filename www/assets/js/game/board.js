@@ -16,6 +16,7 @@ class Board {
         this.selectedGemTween = null;
         this.tempShiftedGem = null;
         this.allowInput = null;
+        this.refillEvent = null;
 
         this.pGame.input.addMoveCallback(this.slideGem, this);
     }
@@ -37,48 +38,91 @@ class Board {
     }
 
     refill(board, newGems) {
+        let isCurrentPlayer = this.isCurrentPlayer();
+        this.pGame.time.events.remove(this.refillEvent);
 
+        if(!isCurrentPlayer) {
+            this.refillEvent = this.pGame.time.events.add(100, this.refillBoard, this, board, newGems,isCurrentPlayer);
+        } else {
+            this.pGame.time.events.add(100, this.refillBoard, this, board, newGems,isCurrentPlayer);
+        }
+
+    }
+
+    refillBoard(board, newGems, isCurrentPlayer) {
         var killedExists = false;
         for (var i = 0; i < this.cols; i++) {
             for (var j = 0; j < this.rows; j++) {
-                if (board[j][i] === '') {
+                var gem = this.getGem(i, j);
+                if (board[j][i] === '' && gem !==null) {
                     killedExists = true;
-                    var gem = this.getGem(i, j);
                     gem.kill();
                 }
-            }
-        }
-
-        if (killedExists) {
-            this.removeKilledGems();
-
-            var maxGemsMissingFromCol = 0;
-
-            for (var i = 0; i < this.cols; i++) {
-                var gemsMissingFromCol = 0;
-
-                for (var j = this.rows - 1; j >= 0; j--) {
-                    var gem = this.getGem(i, j);
-                    if (gem === null) {
-                        gemsMissingFromCol++;
-                        gem = this.gems.getFirstDead();
-                        gem.reset(i * this.gem_size, -gemsMissingFromCol * this.gem_size);
-                        var icon = newGems[j][i];
-                        gem.loadTexture(icon);
-                        this.setGemPos(gem, i, j);
-                        this.tweenGemPos(gem, gem.posX, gem.posY);
-                    } else if (this.getGemColor(gem) !== board[j][i]) {
-                        gem.loadTexture(board[j][i]);
-                    }
+                else if (board[j][i] && this.getGemColor(gem) !== board[j][i]) {
+                    gem.loadTexture(board[j][i]);
                 }
-
-                maxGemsMissingFromCol = Math.max(maxGemsMissingFromCol, gemsMissingFromCol);
-            }
-
-            if (this.isCurrentPlayer()) {
-                this.pGame.time.events.add(maxGemsMissingFromCol * 2 * 100, this.sendBoard, this);
             }
         }
+
+        if(killedExists) {
+            this.removeKilledGems();
+            var dropGemDuration = this.dropGems();
+            // delay board refilling until all existing gems have dropped down
+            this.pGame.time.events.add(dropGemDuration * 100, this.setGems, this, board, newGems, isCurrentPlayer);
+        }
+    }
+
+    setGems(board, newGems, isCurrentPlayer) {
+        var maxGemsMissingFromCol = 0;
+
+        for (var i = 0; i < this.cols; i++) {
+            var gemsMissingFromCol = 0;
+
+            for (var j = this.rows - 1; j >= 0; j--) {
+                var gem = this.getGem(i, j);
+                if (gem === null) {
+                    gemsMissingFromCol++;
+                    gem = this.gems.getFirstDead();
+                    gem.reset(i * this.gem_size, -gemsMissingFromCol * this.gem_size);
+                    var icon = newGems.pop();
+                    gem.loadTexture(icon);
+                    this.setGemPos(gem, i, j);
+                    this.tweenGemPos(gem, gem.posX, gem.posY);
+                }
+            }
+            maxGemsMissingFromCol = Math.max(maxGemsMissingFromCol, gemsMissingFromCol);
+        }
+
+        if (isCurrentPlayer) {
+            this.pGame.time.events.add(maxGemsMissingFromCol * 2 * 100, this.sendBoard, this);
+        }
+    }
+
+    // look for gems with empty space beneath them and move them down
+    dropGems() {
+
+        var dropRowCountMax = 0;
+
+        for (var i = 0; i < this.cols; i++) {
+            var dropRowCount = 0;
+
+            for (var j = this.rows - 1; j >= 0; j--) {
+                var gem = this.getGem(i, j);
+
+                if (gem === null) {
+                    dropRowCount++;
+                }
+                else if (dropRowCount > 0) {
+                    this.setGemPos(gem, gem.posX, gem.posY + dropRowCount);
+                    this.tweenGemPos(gem, gem.posX, gem.posY);
+                }
+            }
+
+            dropRowCountMax = Math.max(dropRowCount, dropRowCountMax);
+        }
+
+        return dropRowCountMax;
+
     }
 
     getGemsData() {
@@ -270,6 +314,7 @@ class Board {
 
     sendBoard() {
         if (this.isCurrentPlayer()) {
+            console.log('send');
             this.socket.emit('turn', this.getGemsData());
         }
     }
