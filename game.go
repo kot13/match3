@@ -151,24 +151,36 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 		var players = map[string]Player{}
 		for _, p := range self.players {
 			if so.Id() == p.Id {
+				oldEnergy := p.Energy
+				oldMimimi := p.Mimimi
 				p.Energy += scores.Energy
 				p.Mimimi += scores.Mimimi
+				p.DiffEnergy = scores.Energy
+				p.DiffMimimi = scores.Mimimi
 				p.State = scores.State
 				if p.Mimimi < minMimimi {
 					p.Mimimi = minMimimi
+					p.DiffMimimi = p.Mimimi - oldMimimi
 				}
 				if p.Energy > maxEnergy {
 					p.Energy = maxEnergy
+					p.DiffEnergy = p.Energy - oldEnergy
 				}
 			} else {
+				oldEnergy := p.Energy
+				oldMimimi := p.Mimimi
 				p.Energy += scores.EnemyEnergy
 				p.Mimimi += scores.EnemyMimimi
+				p.DiffEnergy = scores.EnemyEnergy
+				p.DiffMimimi = scores.EnemyMimimi
 				p.State = scores.EnemyState
 				if p.Mimimi < minMimimi {
 					p.Mimimi = minMimimi
+					p.DiffMimimi = p.Mimimi - oldMimimi
 				}
 				if p.Energy > maxEnergy {
 					p.Energy = maxEnergy
+					p.DiffEnergy = p.Energy - oldEnergy
 				}
 			}
 			players[p.Id] = *p

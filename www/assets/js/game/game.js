@@ -33,6 +33,11 @@ class Game {
         this.message = pgame.add.text(0, 0, 'Ожидаем второго котика', {fill: 'white', align: 'center', stroke: 'rgba(0,0,0,0)', strokeThickness: 4});
         this.message.x = pgame.width / 2.0 - this.message.width / 2.0;
         this.message.y = 30;
+
+        this.messageEnergy = pgame.add.text(220, 3, '', {fill: '#19ff19', align: 'left', fontSize: 14});
+        this.messageMimimi = pgame.add.text(220, 23, '', {fill: '#ffc0cb', align: 'left', fontSize: 14});
+        this.messageEnemyEnergy = pgame.add.text(345, 3, '', {fill: '#19ff19', align: 'left', fontSize: 14});
+        this.messageEnemyMimimi = pgame.add.text(345, 23, '', {fill: '#ffc0cb', align: 'left', fontSize: 14});
     }
 
     update() {
@@ -158,12 +163,20 @@ class Game {
                 if (state.players[key].state !== '') {
                     pgame.state.states.Game.player.setState(this.animations[state.players[key].state]);
                 }
+                let diffEnenrgy = state.players[key].diffEnergy;
+                let difMimimi = state.players[key].diffMimimi;
+                this.messageEnergy.setText(diffEnenrgy === 0 ? '' : (diffEnenrgy > 0 ? '+' + diffEnenrgy : diffEnenrgy));
+                this.messageMimimi.setText(difMimimi === 0 ? '' : (difMimimi > 0 ? '+' + difMimimi : difMimimi));
             } else {
                 this.enemyEnergyBar.setPercent(state.players[key].energy);
                 this.enemyMimimiBar.setPercent(state.players[key].mimimi);
                 if (state.players[key].state !== '') {
                     pgame.state.states.Game.enemy.setState(this.animations[state.players[key].state]);
                 }
+                let diffEnenrgy = state.players[key].diffEnergy;
+                let difMimimi = state.players[key].diffMimimi;
+                this.messageEnemyEnergy.setText(diffEnenrgy === 0 ? '' : (diffEnenrgy > 0 ? '+' + diffEnenrgy : diffEnenrgy));
+                this.messageEnemyMimimi.setText(difMimimi === 0 ? '' : (difMimimi > 0 ? '+' + difMimimi : difMimimi));
             }
         }
 
