@@ -32,6 +32,8 @@ class Splash {
         pgame.load.image('gem4', 'assets/images/ryba.png');
         pgame.load.image('gem5', 'assets/images/lapa.png');
 
+        pgame.load.image('wow', 'assets/images/wow.png');
+
         pgame.load.image('game_bg', 'assets/images/game_bg.png');
         pgame.load.image('menu_bg', 'assets/images/menu_bg.png');
         pgame.load.image('splash_win', 'assets/images/win.png');

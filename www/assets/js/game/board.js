@@ -41,10 +41,10 @@ class Board {
         let isCurrentPlayer = this.isCurrentPlayer();
         this.pGame.time.events.remove(this.refillEvent);
 
-        if(!isCurrentPlayer) {
-            this.refillEvent = this.pGame.time.events.add(100, this.refillBoard, this, board, newGems,isCurrentPlayer);
+        if (!isCurrentPlayer) {
+            this.refillEvent = this.pGame.time.events.add(100, this.refillBoard, this, board, newGems, isCurrentPlayer);
         } else {
-            this.pGame.time.events.add(100, this.refillBoard, this, board, newGems,isCurrentPlayer);
+            this.pGame.time.events.add(100, this.refillBoard, this, board, newGems, isCurrentPlayer);
         }
 
     }
@@ -54,9 +54,10 @@ class Board {
         for (var i = 0; i < this.cols; i++) {
             for (var j = 0; j < this.rows; j++) {
                 var gem = this.getGem(i, j);
-                if (board[j][i] === '' && gem !==null) {
+                if (board[j][i] === '' && gem !== null) {
                     killedExists = true;
-                    gem.kill();
+                    gem.loadTexture('wow');
+                    this.pGame.time.events.add(100, this.killGem, this, gem);
                 }
                 else if (board[j][i] && this.getGemColor(gem) !== board[j][i]) {
                     gem.loadTexture(board[j][i]);
@@ -64,12 +65,19 @@ class Board {
             }
         }
 
-        if(killedExists) {
-            this.removeKilledGems();
-            var dropGemDuration = this.dropGems();
-            // delay board refilling until all existing gems have dropped down
-            this.pGame.time.events.add(dropGemDuration * 100, this.setGems, this, board, newGems, isCurrentPlayer);
-        }
+        this.pGame.time.events.add(110, function (board, newGems, isCurrentPlayer, killedExists) {
+            if (killedExists) {
+                this.removeKilledGems();
+                var dropGemDuration = this.dropGems();
+                // delay board refilling until all existing gems have dropped down
+                this.pGame.time.events.add(dropGemDuration * 100, this.setGems, this, board, newGems, isCurrentPlayer);
+            }
+        }, this, board, newGems, isCurrentPlayer, killedExists);
+
+    }
+
+    killGem(gem) {
+        gem.kill();
     }
 
     setGems(board, newGems, isCurrentPlayer) {
