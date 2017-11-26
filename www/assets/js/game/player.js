@@ -15,6 +15,9 @@ class Player {
     }
 
     setState(state) {
+        if (this.game.state.current !== 'Game') {
+            return;
+        }
         this.state = state;
         if (this.sprite) {
             this.sprite.kill();
@@ -32,9 +35,7 @@ class Player {
                 loop = false;
                 break;
             case 'win':
-                loop = false;
-                this.anim.onComplete.add(this.animationStopped, this);
-                break;
+            case 'mimi':
             case 'hurt':
                 loop = false;
                 this.anim.onComplete.add(this.animationStopped, this);
@@ -48,6 +49,5 @@ class Player {
         setTimeout(function () {
             self.setState('stay');
         }, 1000);
-
     }
 }

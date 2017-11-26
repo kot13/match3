@@ -175,9 +175,17 @@ class Game {
         if (currentPlayer === this.socket.id) {
             this.message.setText('Котик, ходи!');
             this.message.x = pgame.width / 2.0 - this.message.width / 2.0;
+
+            setTimeout(function () {
+                pgame.state.states.Game.player.setState('stay');
+            }, 1000);
         } else {
             this.message.setText('Ходит другой котик');
             this.message.x = pgame.width / 2.0 - this.message.width / 2.0;
+
+            setTimeout(function () {
+                pgame.state.states.Game.enemy.setState('stay');
+            }, 1000);
         }
     }
 }
