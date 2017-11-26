@@ -158,7 +158,7 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 					p.Mimimi = minMimimi
 				}
 				if p.Energy > maxEnergy {
-					p.Mimimi = maxEnergy
+					p.Energy = maxEnergy
 				}
 			} else {
 				p.Energy += scores.EnemyEnergy
@@ -168,7 +168,7 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 					p.Mimimi = minMimimi
 				}
 				if p.Energy > maxEnergy {
-					p.Mimimi = maxEnergy
+					p.Energy = maxEnergy
 				}
 			}
 			players[p.Id] = *p
