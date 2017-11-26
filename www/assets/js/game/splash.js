@@ -41,11 +41,11 @@ class Splash {
         pgame.load.image('cat_ginger','assets/images/cat2.png');
         pgame.load.image('cat_lock','assets/images/cat-lock.png');
 
-        pgame.load.spritesheet('cat_gray_stay1', '/assets/images/sprites/cat-gray/stay.png', 273, 237, 17);
+        pgame.load.spritesheet('cat_gray_stay', '/assets/images/sprites/cat-gray/stay.png', 273, 237, 17);
         pgame.load.spritesheet('cat_gray_klubok', '/assets/images/sprites/cat-gray/klubok.png', 277, 237, 3);
         pgame.load.spritesheet('cat_gray_lay', '/assets/images/sprites/cat-gray/lay.png', 273, 237, 10);
         pgame.load.spritesheet('cat_gray_die', '/assets/images/sprites/cat-gray/die.png', 280, 237, 9);
-        pgame.load.spritesheet('cat_gray_stay', '/assets/images/sprites/cat-gray/hurt.png', 273, 237, 9);
+        pgame.load.spritesheet('cat_gray_hurt', '/assets/images/sprites/cat-gray/hurt.png', 273, 237, 9);
         pgame.load.spritesheet('cat_gray_win', '/assets/images/sprites/cat-gray/win.png', 271, 237, 4);
         pgame.load.spritesheet('cat_gray_mimi', '/assets/images/sprites/cat-gray/mimi.png', 252, 237, 18);
 
