@@ -22,9 +22,32 @@ class Player {
         this.sprite  = this.game.add.sprite(this.x, this.y, this.skin + '_' +  this.state);
         this.anim = this.sprite.animations.add(this.skin + '_' + this.state);
         let loop = true;
-        if (state === 'die') {
-            loop = false;
+        switch (state) {
+            case 'stay':
+            case 'lay':
+            case 'klubok':
+                loop = true;
+                break;
+            case 'die':
+                loop = false;
+                break;
+            case 'win':
+                loop = false;
+                this.anim.onComplete.add(this.animationStopped, this);
+                break;
+            case 'hurt':
+                loop = false;
+                this.anim.onComplete.add(this.animationStopped, this);
+                break;
         }
         this.anim.play(10, loop);
+    }
+
+    animationStopped(sprite, animation) {
+        let self = this;
+        setTimeout(function () {
+            self.setState('stay');
+        }, 1000);
+
     }
 }
