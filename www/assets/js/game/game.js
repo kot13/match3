@@ -11,8 +11,8 @@ class Game {
             'gem1': 'klubok',
             'gem2': 'win', // ?
             'enemyGem2': 'lay',
-            'gem3': 'klubok', // ?
-            'gem4': 'klubok', // ?
+            'gem3': 'mimi', // ?
+            'gem4': 'stay', // ?
             'gem5': 'win', // ?
             'enemyGem5': 'hurt',
         }
