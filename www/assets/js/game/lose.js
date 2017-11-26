@@ -2,7 +2,7 @@
 
 class Lose {
     constructor() {
-        this.background = pgame.make.sprite(0, 0, 'splash_lose');
+        this.background = pgame.make.sprite(0, 0, 'menu_bg');
         this.background.width = pgame.width;
         this.background.height = pgame.height;
     }
@@ -11,5 +11,8 @@ class Lose {
         pgame.add.existing(this.background);
     }
 
-    create() {}
+    create() {
+        this.message = pgame.add.text(0, 0, 'Ты милый, но есть котики милее!', {fill: 'white', align: 'center', stroke: 'rgba(0,0,0,0)', strokeThickness: 4});
+        this.message.x = pgame.width / 2.0 - this.message.width / 2.0;
+        this.message.y = pgame.height / 2.0 - this.message.height / 2.0;}
 }
