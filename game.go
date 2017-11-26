@@ -32,7 +32,7 @@ type GameState struct {
 	Players       map[string]Player `json:"players"`
 	Board         [][]string        `json:"board"`
 	CurrentPlayer string            `json:"currentPlayer"`
-	NewGems       [][]string        `json:"newGems"`
+	NewGems       []string          `json:"newGems"`
 }
 
 var playersLock = sync.Mutex{}
@@ -174,7 +174,7 @@ func (self *Game) AddPlayer(so socketio.Socket) {
 			players[p.Id] = *p
 		}
 
-		if IsEmptyBoard(newGems) {
+		if len(newGems) == 0 {
 			currentPlayer.Lock()
 			for _, p := range self.players {
 				if currentPlayer.id != p.Id {

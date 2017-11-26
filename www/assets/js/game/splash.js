@@ -46,12 +46,14 @@ class Splash {
         pgame.load.spritesheet('cat_gray_lay', '/assets/images/sprites/cat-gray/lay.png', 273, 237, 10);
         pgame.load.spritesheet('cat_gray_die', '/assets/images/sprites/cat-gray/die.png', 280, 237, 9);
         pgame.load.spritesheet('cat_gray_hurt', '/assets/images/sprites/cat-gray/hurt.png', 280, 237, 9);
+        pgame.load.spritesheet('cat_gray_win', '/assets/images/sprites/cat-gray/win.png', 271, 237, 4);
 
         pgame.load.spritesheet('cat_ginger_stay', '/assets/images/sprites/cat-ginger/stay.png', 273, 237, 17);
         pgame.load.spritesheet('cat_ginger_klubok', '/assets/images/sprites/cat-ginger/klubok.png', 277, 237, 3);
         pgame.load.spritesheet('cat_ginger_lay', '/assets/images/sprites/cat-ginger/lay.png', 273, 237, 10);
         pgame.load.spritesheet('cat_ginger_die', '/assets/images/sprites/cat-ginger/die.png', 280, 237, 9);
         pgame.load.spritesheet('cat_ginger_hurt', '/assets/images/sprites/cat-ginger/hurt.png', 280, 237, 9);
+        pgame.load.spritesheet('cat_ginger_win', '/assets/images/sprites/cat-ginger/win.png', 271, 237, 4);
     }
 
     create() {
