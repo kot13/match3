@@ -62,7 +62,7 @@ var gems = []Gem{
 		EnemyMimimi:           -20,
 		EnemyAdditionalMimimi: -5,
 		State:      "gem2",
-		EnemyState: "ememyGem2",
+		EnemyState: "enemyGem2",
 	},
 	Gem{
 		Name:                  "gem3",
@@ -101,7 +101,7 @@ var gems = []Gem{
 		EnemyMimimi:           0,
 		EnemyAdditionalMimimi: 0,
 		State:      "gem5",
-		EnemyState: "ememyGem5",
+		EnemyState: "enemyGem5",
 	},
 }
 

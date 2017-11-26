@@ -7,6 +7,15 @@ class Game {
         this.background.height = pgame.height;
 
         this.players = new Map();
+        this.animations = {
+            'gem1': 'klubok',
+            'gem2': 'win', // ?
+            'enemyGem2': 'lay',
+            'gem3': 'klubok', // ?
+            'gem4': 'klubok', // ?
+            'gem5': 'win', // ?
+            'enemyGem5': 'hurt',
+        }
     }
 
     preload() {
@@ -146,9 +155,15 @@ class Game {
             if (key === this.socket.id) {
                 this.myEnergyBar.setPercent(state.players[key].energy);
                 this.myMimimiBar.setPercent(state.players[key].mimimi);
+                if (state.players[key].state !== '') {
+                    pgame.state.states.Game.player.setState(this.animations[state.players[key].state]);
+                }
             } else {
                 this.enemyEnergyBar.setPercent(state.players[key].energy);
                 this.enemyMimimiBar.setPercent(state.players[key].mimimi);
+                if (state.players[key].state !== '') {
+                    pgame.state.states.Game.enemy.setState(this.animations[state.players[key].state]);
+                }
             }
         }
 
